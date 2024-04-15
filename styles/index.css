@@ -1,0 +1,66 @@
+.slidev-layout a {
+  border-style: unset;
+  border-width: 0;
+}
+
+.footnotes-sep {
+  display: none;
+}
+
+.footnotes {
+  position: absolute;
+  border-top: 1px solid;
+  --at-apply: text-sm opacity-75 bottom-1 left-7;
+
+  a {
+    --at-apply: text-blue-500;
+  }
+
+  li {
+    p {
+      margin: 0;
+    }
+  }
+}
+
+.footnote-backref {
+  display: none;
+}
+
+html.dark {
+  .grid.grid-cols-2>div:nth-child(2) {
+    filter: invert(1);
+  }
+
+  .grid.grid-cols-2>div:not(.invertible)+div {
+    filter: none;
+  }
+
+  img.invertible {
+    filter: invert(1);
+  }
+
+  img:not(.invertible) {
+    filter: none;
+  }
+}
+
+/* Hide elements entirely or fade them upon v-click.hide */
+.slidev-vclick-hidden.hide {
+  display: none;
+}
+
+.slidev-vclick-hidden.faded {
+  opacity: 0.1 !important;
+}
+
+/* Tweaks to two-cols-header layout */
+
+.two-cols-header {
+  /* Auto size for header, and more room for middle row  */
+  grid-template-rows: auto 3fr 1fr !important;
+}
+
+.col-bottom {
+  align-self: start !important;
+}
