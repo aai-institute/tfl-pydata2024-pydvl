@@ -218,3 +218,41 @@ Take one data point $x$
   ```
 
 </v-clicks>
+
+---
+layout: image-right
+image: data-valuation-taxonomy.svg
+backgroundSize: contain
+class: invertible
+---
+
+# Many methods for data valuation
+
+It's a growing field [^1]
+
+<v-clicks>
+
+- Fit before, during, or after trainig
+- With or without reference datasets
+- Specific to classification / regression / unsupervised
+- Different model assumptions (from none to strong)
+- Local and global valuation
+
+</v-clicks>
+
+<!-- Footer -->
+
+[^1]: [A taxonomy of data valuation](https://transferlab.ai/blog)
+
+
+<!--
+Notes can also sync with clicks
+
+[click] pyDVL focuses around model-based, but we're introducing model-free methods as
+well, e.g. LAVA.
+
+[click] In some data market scenarios, one does not have a reference dataset, but
+instead uses those available to construct one.
+
+[click:3] Last click (skip two clicks)
+-->

@@ -126,12 +126,8 @@ or
 
 <!--
 
-Add items in ::right:: using this
-```md
-<div v-click="'+1'">
-stuff
-</div> 
-```
+[click:2] What data valuation is not:
+- Differences to SHAP, LIME, etc.
 -->
 
 ---
@@ -220,7 +216,6 @@ Increase your accuracy by removing bogus points (not necessarily _outliers_)
 - Data acquisition: prioritize data sources
 - Attribution: find the most important data points
 - Continual learning: compress your dataset
-- Data markets: price your data
 - ...
 
 ---
@@ -356,43 +351,6 @@ with joblib.parallel_backend("ray", n_jobs=48):
 </v-drag>
 </v-click>
 
----
-layout: image-right
-image: data-valuation-taxonomy.svg
-backgroundSize: contain
-class: invertible
----
-
-# Many methods for data valuation
-
-It's a growing field [^1]
-
-<v-clicks>
-
-- Fit before, during, or after trainig
-- With or without reference datasets
-- Specific to classification / regression / unsupervised
-- Different model assumptions (from none to strong)
-- Local and global valuation
-
-</v-clicks>
-
-<!-- Footer -->
-
-[^1]: [A taxonomy of data valuation](https://transferlab.ai/blog)
-
-
-<!--
-Notes can also sync with clicks
-
-[click] pyDVL focuses around model-based, but we're introducing model-free methods as
-well, e.g. LAVA.
-
-[click] In some data market scenarios, one does not have a reference dataset, but
-instead uses those available to construct one.
-
-[click:3] Last click (skip two clicks)
--->
 
 ---
 title: Measuring value with marginal contributions
@@ -444,105 +402,10 @@ value = weighted_mean(scores - scores_without, coefficients)
 <br>
 <div v-click="14" class="text-center text-bold text-xl">Semivalue (e.g. Shapley)</div>
 
----
-layout: two-cols
----
-
-# What data valuation is not
-<v-clicks>
-
-- Differences to SHAP, LIME, etc.
-
-</v-clicks>
 
 ---
-layout: fact
+src: ./pages/influence.md
 ---
-
-## Influence functions
-
----
-title: The influence of a training point
-level: 1
-layout: center
----
-
-## The influence of a training point
-
-asdfas
-
-<v-clicks>
-
-- Major differences
-- One value per train/test point pair
-- Code?
-
-</v-clicks>
-
----
-layout: two-cols-header
----
-
-## Example with IF
-
-::left::
-
-<v-clicks>
-
-- Locating flipped labels in a dataset
-
-</v-clicks>
-
-::right::
-
-```python {hide|1-2}
-# Maybe an example here
-
-```
-
----
-layout: two-cols
----
-
-# Example with IF (part 2)
-<v-clicks>
-
-- Data reweighthing, and how to use it
-
-</v-clicks>
-
-
----
-layout: two-cols-header
----
-
-# Accelerating IF computation
-
-::left::
-<v-clicks>
-
-- Where the problem lies
-- What fits in my GPU?
-- What can we do
-
-</v-clicks>
-
-::right::
-
-<v-clicks>
-
-- Approximations
-- Parallelization
-- Out-of-core computation
-
-</v-clicks>
-
-::bottom::
-
-```python
-# Maybe an example here
-
-```
 
 ---
 title: Picking methods
