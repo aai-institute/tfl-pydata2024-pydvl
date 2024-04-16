@@ -170,7 +170,8 @@ class: p-6 table-center
 <v-clicks>
 
 - [Top Hits Spotify from 2000-2019](https://www.kaggle.com/datasets/paradisejoy/top-hits-spotify-from-20002019)[^1]
-- Predict song popularity with Gradient Boosting
+- Predict song popularity
+- Simple `GradientBoostingRegressor`
 - Drop "bad" data points
 </v-clicks>
 
@@ -280,7 +281,7 @@ hideInToc: true
 title: Requirements
 level: 1
 layout: two-cols
-class: px-6
+class: px-6 table-invisible
 ---
 
 ## Requirements
