@@ -10,7 +10,7 @@
 .footnotes {
   position: absolute;
   border-top: 1px solid;
-  --at-apply: text-sm opacity-75 bottom-1 left-7;
+  --at-apply: text-sm opacity-75 bottom-3 left-7;
 
   a {
     --at-apply: text-blue-500;
