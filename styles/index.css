@@ -64,3 +64,14 @@ html.dark {
 .col-bottom {
   align-self: start !important;
 }
+
+th {
+  font-weight: bold!important;
+}
+
+.table-center {
+  th, td {
+    text-align: center;
+  }
+
+}
