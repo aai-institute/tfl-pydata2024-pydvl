@@ -170,8 +170,7 @@ class: p-6 table-center
 <v-clicks>
 
 - [Top Hits Spotify from 2000-2019](https://www.kaggle.com/datasets/paradisejoy/top-hits-spotify-from-20002019)[^1]
-- Predict song popularity
-- Gradient Boosting
+- Predict song popularity with Gradient Boosting
 - Drop "bad" data points
 </v-clicks>
 
@@ -625,7 +624,7 @@ level: 1
 layout: two-cols
 title: Thank you!
 hideInToc: true
-class: text-center
+class: text-center table-center table-invisible p-6
 ---
 Thank you for your attention!
 ## [pydvl.org](https://pydvl.org)
@@ -642,9 +641,8 @@ Thank you for your attention!
 PyDVL contributors
 
 
-|       |                   |
-|-------|-------------------|
-| Anes Benmerzoug | Miguel de Benito Delgado |
-| Janoś Gabler | Jakob Kruse |
-| Markus Semmler | Fabio Peruzzo |
-| Kristof Schröder | Bastian Zim |
+|  |  |  |
+|--|--|--|
+| <img src="public/anes.jpeg" alt="Anes Benmerzoug" class="author-thumbnail"> | <img src="public/miguel.png" alt="Miguel de Benito Delgado" class="author-thumbnail"> | <img src="public/janos.jpeg" alt="Janoś Gabler" class="author-thumbnail"> | 
+| <img src="public/jakob.jpeg" alt="Jakob Kruse" class="author-thumbnail"> | <img src="public/markus.jpeg" alt="Markus Semmler" class="author-thumbnail"> | <img src="public/fabio.png" alt="Fabio Peruzzo" class="author-thumbnail"> |
+| <img src="public/kristof.png" alt="Kristof Schröder" class="author-thumbnail"> | <img src="public/bastian.png" alt="Bastian Zim" class="author-thumbnail"> | <img src="public/uncle-sam.png" alt="You" class="author-thumbnail"> |
