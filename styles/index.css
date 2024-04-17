@@ -74,8 +74,10 @@ th {
   th,
   td {
     text-align: center;
+    img {
+      display: inline-block;
+    }
   }
-
 }
 
 .table-invisible {

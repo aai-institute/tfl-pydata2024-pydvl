@@ -423,11 +423,10 @@ with joblib.parallel_backend("ray", n_jobs=48):
 </v-click>
 
 <v-click>
-<v-drag pos="660,330,80,80,-45">
+<v-drag pos="822,134,80,80,36">
 <div text-center>(New interface)</div>
 </v-drag>
 </v-click>
-
 
 ---
 title: Measuring value with marginal contributions
@@ -493,6 +492,9 @@ This is not a silver bullet
 - <span v-mark.underline.red="3">Convergence</span>
 - <span v-mark.strike-through.orange="2">Consistency</span>
 - <span v-mark.underline.green="1">Model dependence</span>
+
+TODO:
+$O(2^n)$ ? But $O(n \log(n))$ for certain situations.
 
 ::right::
 
@@ -646,4 +648,4 @@ PyDVL contributors
 |--|--|--|
 | <img src="public/anes.jpeg" alt="Anes Benmerzoug" class="author-thumbnail"> | <img src="public/miguel.png" alt="Miguel de Benito Delgado" class="author-thumbnail"> | <img src="public/janos.jpeg" alt="Janoś Gabler" class="author-thumbnail"> | 
 | <img src="public/jakob.jpeg" alt="Jakob Kruse" class="author-thumbnail"> | <img src="public/markus.jpeg" alt="Markus Semmler" class="author-thumbnail"> | <img src="public/fabio.png" alt="Fabio Peruzzo" class="author-thumbnail"> |
-| <img src="public/kristof.png" alt="Kristof Schröder" class="author-thumbnail"> | <img src="public/bastian.png" alt="Bastian Zim" class="author-thumbnail"> | <img src="public/uncle-sam.png" alt="You" class="author-thumbnail"> |
+| <img src="public/kristof.jpg" alt="Kristof Schröder" class="author-thumbnail"> | <img src="public/bastian.png" alt="Bastian Zim" class="author-thumbnail"> | <img src="public/uncle-sam.png" alt="You" class="author-thumbnail"><span style="font-size:small;">You!</span> |
