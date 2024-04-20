@@ -82,15 +82,17 @@ MAX OF 10 SLIDES!!!
 ---
 layout: fact
 hideInToc: true
+title: What
 ---
 
-# What
+## What is data valuation?
 
 ---
 title: What is data valuation?
 level: 1
 layout: two-cols
 class: self-center text-center p-6
+transition: fade-out
 ---
 
 # Data valuation computes...
@@ -151,23 +153,49 @@ layout: fact
 hideInToc: true
 ---
 
-# Why?
+## What can data valuation do for you?
 
 ---
 level: 1
-title: What can it do for you?
-layout: center
+title: "Example 1: Data cleaning"
+layout: two-cols-header
+class: p-6 table-center
 ---
 
-## What can data valuation do for you?
+## Example 1: Data cleaning
 
-TODO: Show this with real example
 
-TODO: Do noise detection in the second code example
+::left::
 
-Data cleaning in 3 steps
+<v-clicks>
+
+- [Top Hits Spotify from 2000-2019](https://www.kaggle.com/datasets/paradisejoy/top-hits-spotify-from-20002019)[^1]
+- Predict song popularity
+- Simple `GradientBoostingRegressor`
+- Drop "bad" data points
+</v-clicks>
 
 <br>
+
+<v-after>
+
+| Data dropped | MAE improvement |
+|--------------|-----------------|
+| 10%          | 9%              |
+| 15%          | 11%             |
+| 20%          | 14%             |
+
+</v-after>
+
+::right::
+
+<div v-click="'+1'">
+
+### Three steps
+
+<br>
+
+</div>
 
 ```python {hide|1-2|4-5|7}
 values = valuation.fit(data).values()
@@ -180,13 +208,19 @@ assert model.score(test) > 1.05 * previous_accuracy
 ```
 <br>
 
-<div v-after>
+<div v-after class="text-center">
 
 #### Profit!
 
+TODO:  (of course not all that glitters is gold... etc. )
 </div>
+
+[^1]: https://www.kaggle.com/datasets/paradisejoy/top-hits-spotify-from-20002019
+
 <!--
-Maybe make the code more detailed / believable? Or even use actual data 
+[click:5] Take these data with a pinch of salt...
+
+[click:4] 1.05 is just a number for the slide of course
 -->
 
 ---
@@ -207,32 +241,50 @@ model.fit(clean_data)
 assert model.score(test) > 1.05 * previous_accuracy
 ```
 
-Increase your accuracy by removing bogus points (not necessarily _outliers_)
+<v-clicks>
+
+- Increase accuracy by removing bogus points
+- Crucially, select data for manual inspection
+- **Data debugging**<br>
+  _what's wrong with this data?_
+- **Model debugging**<br>
+  _why are these data detrimental?_
+
+</v-clicks>
 
 ::right::
 
+<div v-click>
+
 ### But also:
 
-- Data acquisition: prioritize data sources
-- Attribution: find the most important data points
-- Continual learning: compress your dataset
+- **Data acquisition**: prioritize data sources
+- **Attribution**: find the most important data points
+
+And more speculatively:
+
+- **Continual learning**: compress your dataset
+- **Data markets**: price your data
+- Improve **fairness metrics**
 - ...
+
+</div>
 
 ---
 layout: fact
 hideInToc: true
 ---
 
-# How?
+## What do you need?
 
 ---
-title: What do you need?
+title: Requirements
 level: 1
 layout: two-cols
-class: px-6
+class: px-6 table-invisible
 ---
 
-## What do you need?
+## Requirements
 
 <br>
 
@@ -284,20 +336,44 @@ class: px-6
 </div>
 
 ---
-layout: center
+layout: two-cols-header
+class: pr-6 pt-6 table-center
 ---
 
-# Computing values with pyDVL
+## Example 2: Finding mislabeled data
 
-Three steps for all valuation methods
+::left::
 
+<div v-click>
+
+- Again: Predict song popularity
+- Corrupt 5% of data at random setting<br>their popularity to 0
+- Task: Detect these data points
+
+</div>
+
+<div v-click>
+
+| % low values | Mislabeled data |
+|--------------|-----------------|
+| 10%          | 60%             |
+| 15%          | 85%             |
+| 20%          | 100%            |
+
+</div>
+
+::right::
+
+<v-click>
+
+### Three steps
 
 ````md magic-move
 
 // First example
 ```python {none|1-2|3-4|5-9|all}
-train, test = Dataset.from_sklearn(load_iris(), train_size=0.6)
-model = LogisticRegression()
+train, val, test = load_spotify_dataset(...)
+model = GradientBoostingRegressor(n_estimators=10)
 scorer = SupervisedScorer("accuracy", test)
 utility = Utility(model, scorer)
 valuation = DataShapleyValuation(
@@ -308,7 +384,7 @@ with joblib.parallel_backend("loky", n_jobs=16):
 ```
 
 ```python {2-3}
-train, test = Dataset.from_sklearn(load_iris(), train_size=0.6)
+train, test = load_data()
 model = AnyModel()
 scorer = CustomScorer(test)
 utility = Utility(model, scorer)
@@ -320,7 +396,7 @@ with joblib.parallel_backend("loky", n_jobs=16):
 ```
 
 ```python {5-7}
-train, test = Dataset.from_sklearn(load_iris(), train_size=0.6)
+train, test = load_data()
 model = AnyModel()
 scorer = CustomScorer(test)
 utility = Utility(model, scorer)
@@ -331,10 +407,8 @@ with joblib.parallel_backend("loky", n_jobs=16):
     valuation.fit(train)
 ```
 
-
-
 ```python {8-9}
-train, test = Dataset.from_sklearn(load_iris(), train_size=0.6)
+train, test = load_data()
 model = AnyModel()
 scorer = CustomScorer(test)
 utility = Utility(model, scorer)
@@ -345,12 +419,14 @@ with joblib.parallel_backend("ray", n_jobs=48):
     valuation.fit(train)
 ```
 ````
+
+</v-click>
+
 <v-click>
-<v-drag pos="660,330,80,80,-45">
+<v-drag pos="822,134,80,80,36">
 <div text-center>(New interface)</div>
 </v-drag>
 </v-click>
-
 
 ---
 title: Measuring value with marginal contributions
@@ -402,6 +478,41 @@ value = weighted_mean(scores - scores_without, coefficients)
 <br>
 <div v-click="14" class="text-center text-bold text-xl">Semivalue (e.g. Shapley)</div>
 
+---
+layout: two-cols
+title: Problems with data valuation
+level: 1
+---
+
+## Where's the catch?
+
+This is not a silver bullet
+
+- <span v-mark.underline.red="3">Computational cost</span>
+- <span v-mark.underline.red="3">Convergence</span>
+- <span v-mark.strike-through.orange="2">Consistency</span>
+- <span v-mark.underline.green="1">Model dependence</span>
+
+TODO:
+$O(2^n)$ ? But $O(n \log(n))$ for certain situations.
+
+::right::
+
+Janos:
+
+- Only the metric used for data valuation is actually improved when dropping data; Other metrics even get worse. I tried MAE, MSE and MAPE
+- The dataset is very small
+- Detecting corrupted data only worked when using more max-draws and stricter convergence criteria than in the tutorial. The result is still dependent on the seed
+- All of this is for one random seed!
+
+<!--
+[click] New methods are appearing that look at data distributions, independently of the model. Also, the model can be changed to a simpler one, or a surrogate model can be used (KNN-Shapley).
+
+[click] One cannot look at value rankings, but must instead look at subsets of data. Also: focus on the extrema.
+
+[click]
+
+-->
 
 ---
 layout: fact
@@ -513,9 +624,10 @@ level: 1
 
 
 ---
-layout: end
+layout: two-cols
 title: Thank you!
 hideInToc: true
+class: text-center table-center table-invisible p-6
 ---
 Thank you for your attention!
 ## [pydvl.org](https://pydvl.org)
@@ -526,3 +638,14 @@ Thank you for your attention!
     <img class="w-25" src="/pydvl-logo.svg" alt="pyDVL logo" />
   </a>
 </div>
+
+::right::
+
+PyDVL contributors
+
+
+|  |  |  |
+|--|--|--|
+| <img src="public/anes.jpeg" alt="Anes Benmerzoug" class="author-thumbnail"> | <img src="public/miguel.png" alt="Miguel de Benito Delgado" class="author-thumbnail"> | <img src="public/janos.jpeg" alt="Janoś Gabler" class="author-thumbnail"> | 
+| <img src="public/jakob.jpeg" alt="Jakob Kruse" class="author-thumbnail"> | <img src="public/markus.jpeg" alt="Markus Semmler" class="author-thumbnail"> | <img src="public/fabio.png" alt="Fabio Peruzzo" class="author-thumbnail"> |
+| <img src="public/kristof.jpg" alt="Kristof Schröder" class="author-thumbnail"> | <img src="public/bastian.png" alt="Bastian Zim" class="author-thumbnail"> | <img src="public/uncle-sam.png" alt="You" class="author-thumbnail"><span style="font-size:small;">You!</span> |
