@@ -43,6 +43,8 @@ class MalariaKaggleDataset:
                 )
 
     def _data_exists(self) -> bool:
+        if not os.path.exists(self.data_base_dir):
+            return False
         parasite_is_empty = os.listdir(self.parasite_path) == 0
         uninfected_is_empty = os.listdir(self.uninfected_path) == 0
         any_is_empty = parasite_is_empty or uninfected_is_empty
