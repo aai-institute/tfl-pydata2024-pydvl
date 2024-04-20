@@ -81,13 +81,15 @@ def compute_influences(
         z = zarr.open(test_train_value_path, mode="r")
         return z[:]
 
-    test_batch_size = 1024
-    train_batch_size = 2048
+    test_batch_size = 256
+    train_batch_size = 256
     test_loader = DataLoader(test_dataset, batch_size=test_batch_size, shuffle=False)
     train_loader = DataLoader(train_dataset, batch_size=train_batch_size, shuffle=False)
 
     model.eval()
     if_model = DirectInfluence(model, loss_fn, hessian_regularization=0.001)
+    print("Fitting DirectInfluence")
+    if_model.fit(train_loader)
 
     if_calc = SequentialInfluenceCalculator(if_model)
     lazy_if_test_train_values = if_calc.influences(test_loader, train_loader)
@@ -144,8 +146,8 @@ def generate_plots(test_train_values: NDArray, model_identifier: str, load: bool
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
-    batch_size = 3072
-    max_epochs = 500
+    batch_size = 768
+    max_epochs = 1
     model_tag = model_tag_builder(max_epochs, batch_size)
 
     lit_model = train(max_epochs, batch_size)

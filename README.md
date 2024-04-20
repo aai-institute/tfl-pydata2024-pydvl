@@ -16,7 +16,7 @@ To run the code, create a virtual environment and install the requirements:
 
 python -m venv venv
 source venv/bin/activate
-pip install -r malaria/requirements.txt
+pip install -r requirements.txt
 ```
 
 

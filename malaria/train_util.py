@@ -55,6 +55,7 @@ def simple_train(
         train_data,
         batch_size=batch_size,
         shuffle=True,
+        num_workers=28
     )
     val_loader = DataLoader(
         val_data,

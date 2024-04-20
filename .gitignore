@@ -7,3 +7,5 @@ slides/dist
 components.d.ts
 results
 data
+__pycache__
+venv
