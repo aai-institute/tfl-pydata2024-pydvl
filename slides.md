@@ -834,6 +834,6 @@ PyDVL contributors
 
 |  |  |  |
 |--|--|--|
-| <img src="/people/anes.jpeg" alt="Anes Benmerzoug" class="author-thumbnail"> | <img src="/people/miguel.png" alt="Miguel de Benito Delgado" class="author-thumbnail"> | <img src="/people/janos.jpeg" alt="Janoś Gabler" class="author-thumbnail"> | 
-| <img src="/people/jakob.jpeg" alt="Jakob Kruse" class="author-thumbnail"> | <img src="/people/markus.jpeg" alt="Markus Semmler" class="author-thumbnail"> | <img src="/people/fabio.png" alt="Fabio Peruzzo" class="author-thumbnail"> |
-| <img src="/people/kristof.jpg" alt="Kristof Schröder" class="author-thumbnail"> | <img src="/people/bastian.png" alt="Bastian Zim" class="author-thumbnail"> | <img src="/people/uncle-sam.png" alt="You" class="author-thumbnail"><span style="font-size:small;">You!</span> |
+| [<img src="/people/anes.jpeg" alt="Anes Benmerzoug" class="author-thumbnail">](https://github.com/AnesBenmerzoug) | [<img src="/people/miguel.png" alt="Miguel de Benito Delgado" class="author-thumbnail">](https://github.com/mdbenito) | [<img src="/people/janos.jpeg" alt="Janoś Gabler" class="author-thumbnail">](https://github.com/janosg) | 
+| [<img src="/people/jakob.jpeg" alt="Jakob Kruse" class="author-thumbnail">](https://github.com/jakobkruse1) | [<img src="/people/markus.jpeg" alt="Markus Semmler" class="author-thumbnail">](https://github.com/kosmitive) | [<img src="/people/fabio.png" alt="Fabio Peruzzo" class="author-thumbnail">](https://github.com/xuzzo) |
+| [<img src="/people/kristof.jpg" alt="Kristof Schröder" class="author-thumbnail">](https://github.com/schroedk) | [<img src="/people/bastien.png" alt="Bastien Zim" class="author-thumbnail">](https://github.com/BastienZim) | [<img src="/people/uncle-sam.png" alt="You" class="author-thumbnail"><span style="font-size:small;">You!</span>](https://github.com/aai-institute/pydvl) |
