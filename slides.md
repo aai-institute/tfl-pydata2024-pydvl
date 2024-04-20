@@ -23,14 +23,11 @@ hideInToc: true
 
 A mild introduction with practical applications
 
-<br>
 
 <div style="display: flex; justify-content: center;">
   <img class="w-40" src="/pydata-logo.png" alt="PyData logo" />
 </div>
 
-<br>
-<br>
 
 [Kristof Schröder](https://github.com/schroedk) - 
 [Miguel de Benito Delgado](https://mdbenito.8027.org)
@@ -65,7 +62,7 @@ layout: two-cols
 hideInToc: true
 ---
 
-# Plan for the talk
+## Plan for the talk
 
 This is just temporary for ourselves
 
@@ -193,7 +190,6 @@ class: p-6 table-center
 
 ### Three steps
 
-<br>
 
 </div>
 
@@ -286,7 +282,6 @@ class: px-6 table-invisible
 
 ## Requirements
 
-<br>
 
 <v-clicks>
 
@@ -316,7 +311,6 @@ class: px-6 table-invisible
 
 ## What frameworks?
 
-<br>
 
 - `numpy` and `sklearn`
 - _Influence Functions_ use `pytorch`
@@ -423,7 +417,7 @@ with joblib.parallel_backend("ray", n_jobs=48):
 </v-click>
 
 <v-click>
-<v-drag pos="822,134,80,80,36">
+<v-drag pos="813,188,80,80,36">
 <div text-center>(New interface)</div>
 </v-drag>
 </v-click>
@@ -435,9 +429,7 @@ layout: two-cols-header
 class: px-6
 ---
 
-## One family of methods
-
-Marginal contributions
+## One family of methods: marginal contributions
 
 ```python {1-2|3-5}
 model = LogisticRegression()
@@ -462,7 +454,7 @@ score = u(train)
 score_without = u(train.drop(x))
 value = score - score_without
 ```
-<br>
+
 <div v-click class="text-center text-bold text-xl">Leave-One-Out</div>
 
 ::right::
@@ -475,7 +467,6 @@ for subset in sampler.from_data(train):
   scores_without.append[u(subset.drop(x))]
 value = weighted_mean(scores - scores_without, coefficients)
 ```
-<br>
 <div v-click="14" class="text-center text-bold text-xl">Semivalue (e.g. Shapley)</div>
 
 ---
@@ -520,64 +511,236 @@ title: Influence functions
 level: 1
 ---
 
-## Influence functions
+## The influence of a training point
+
+(on single test points)
+
+
+<!--
+
+As opposed to the Shapley value, which looks at the average influence of a data point on the whole test set.
+
+-->
 
 ---
 title: The influence of a training point
 level: 1
-layout: center
+layout: two-cols-header
+class: table-center p-6
 ---
 
 ## The influence of a training point
 
-asdfas
+::left::
+
+| Data                                  |                           | Test loss                |
+|---------------------------------------|---------------------------|--------------------------|
+| $\{z_1, z_2, ..., z_n\}$              | (... train ...) $\to$     | $L(z)$                   |
+| $\{z_1, \red{\sout{z_2}}, ..., z_n\}$ | (... train ...) $\to$     | $L_{\red{-z_2}}(z)$      |
+
+
+<v-click>
+
+The "influence" of $z_i$ on test point $z$ is roughly
+
+  $$L(z) - L_{-z_i}(z)$$
+
+
+</v-click>
+
+::right::
 
 <v-clicks>
 
-- Major differences
-- One value per train/test point pair
-- Code?
+- One value per train / test point pair $(z_i, z)$
+
+- A <span v-mark.underline.red="'4'">full retraining</span> per train / test point pair!
 
 </v-clicks>
 
 ---
 layout: two-cols-header
+title: Computing influences
+level: 1
+class: p-6
 ---
 
-## Example with IF
+## Computing influences
+
+::left::
+
+
+<span v-mark.underline.red>Luckily<span v-click="'1'">?</span></span>
+
+$$
+I(z_i, z) = \nabla_\theta L^\top \cdot H^{-1}_{\theta} \cdot \nabla_\theta L
+$$
+
+<v-click at="2">
+<Arrow x1="360" y1="275" x2="325" y2="195" color="red"/>
+</v-click>
+
+::right::
+
+<v-clicks>
+
+- Inverse of the Hessian!
+- Implicit Hessian-vector products
+- Quality of the approximations
+- Does it matter?
+
+</v-clicks>
+
+---
+layout: two-cols-header
+level: 1
+class: table-invisible table-center py-6 no-bullet-points
+---
+
+## Example 3: Finding mislabeled cells
+
 
 ::left::
 
 <v-clicks>
 
-- Locating flipped labels in a dataset
+- [**NIH dataset**](https://lhncbc.nlm.nih.gov/LHC-downloads/downloads.html#malaria-datasets) for malaria screening[^1]
+- ![](/malaria/some-images-could-be-mislabelled.png)
+- **Goal:** detect these data points with pyDVL
+
+</v-clicks>
+
+<div v-click>
+
+| Uninfected | Infected |
+|------------|----------|
+| <img src="/malaria/C123P84ThinF_IMG_20151002_152144_cell_49.png" alt="Uninfected cell"> | <img src="/malaria/C39P4thinF_original_IMG_20150622_111206_cell_87.png" alt="Infected cell"> |
+
+</div>
+
+::right::
+TODO: This after the results?
+<br>
+<v-click>
+
+````md magic-move
+
+```python {hide|4|5|7-8|10|all|4,7}
+torch_model = ...  # Trained model
+train, test = ... # Dataloaders
+
+if_model = DirectInfluence(torch_model, loss, ...)
+if_model.fit(train)
+
+if_calc = SequentialInfluenceCalculator(if_model)
+lazy_values = if_calc.influences(test, train)
+
+values = lazy_values.to_zarr(path, ...)
+```
+
+```python {4,7}
+torch_model = ...  # Trained model
+train, test = ... # Dataloaders
+
+if_model = ArnoldiInfluence(torch_model, loss, ...)
+if_model.fit(train)
+
+if_calc = SequentialInfluenceCalculator(if_model)
+lazy_values = if_calc.influences(test, train)
+
+values = lazy_values.to_zarr(path, ...)
+```
+
+```python {4,7}
+torch_model = ...  # Trained model
+train, test = ... # Dataloaders
+
+if_model = NystroemSketchInfluence(torch_model, loss, ...)
+if_model.fit(train)
+
+if_calc = SequentialInfluenceCalculator(if_model)
+lazy_values = if_calc.influences(test, train)
+
+values = lazy_values.to_zarr(path, ...)
+```
+
+```python {4,7}
+torch_model = ...  # Trained model
+train, test = ... # Dataloaders
+
+if_model = NystroemSketchInfluence(torch_model, loss, ...)
+if_model.fit(train)
+
+if_calc = DaskInfluenceCalculator(if_model)
+lazy_values = if_calc.influences(test, train)
+
+values = lazy_values.to_zarr(path, ...)
+```
+````
+
+</v-click>
+
+<div v-click="'+2'" class="text-center">
+
+<br>
+
+Plus CG, LiSSa, E-KFAC, ...
+
+</div>
+
+
+[^1]: https://www.kaggle.com/iarunava/cell-images-for-detecting-malaria
+
+---
+hideInToc: true
+layout: two-cols
+class: p-6
+---
+
+## Results
+
+<br>
+
+<v-clicks>
+
+- Compute all pairs of influences
+- For each training point, compute the 25th percentile
+- Sort training points by this value
+- Look at the K smallest ones
 
 </v-clicks>
 
 ::right::
 
-```python {hide|1-2}
-# Maybe an example here
+<v-click>
 
-```
+Cells labelled as healthy
+<img src="/malaria/smallest_3_0.25_quantile_influence_uninfected_uninfected.png" alt="Cells labelled as healthy" class="w-100">
 
----
-layout: two-cols
----
+</v-click>
 
-# Example with IF (part 2)
-<v-clicks>
+<v-click>
+<Arrow x1="650" y1="200" x2="585" y2="155" color="red"/>
+<Arrow x1="655" y1="200" x2="705" y2="167" color="red"/>
+</v-click>
 
-- Data reweighthing, and how to use it
+<v-click>
+Cells labelled as parasitized
+<img src="/malaria/smallest_3_0.25_quantile_influence_parasitized_parasitized.png" alt="Cells labelled as parasitized" class="w-100">
+</v-click>
 
-</v-clicks>
+<v-click>
+<Arrow x1="600" y1="450" x2="670" y2="390" color="green"/>
+</v-click>
+
 
 
 ---
 layout: two-cols-header
 ---
 
-# Accelerating IF computation
+## Accelerating IF computation
+
 
 ::left::
 <v-clicks>
@@ -608,19 +771,45 @@ layout: two-cols-header
 ---
 title: Picking methods
 level: 1
+layout: two-cols-header
+class: p-6 text-center no-bullet-points
 ---
 
 ## How to choose between IF and DV?
 
-<v-clicks>
+<br>
 
-- 
-- 
+::left::
+
+#### Influence functions
+
+<v-clicks>
+ 
+- Large models with costly retrainings
+- `torch` interface
+- Single test point
 
 </v-clicks>
 
+::right::
 
+#### Data valuation
 
+<v-clicks>
+
+- Smaller models
+- `sklearn` interface
+- Value over the whole test set
+
+</v-clicks>
+
+::bottom::
+
+<v-click>
+
+### These are tools for <span v-mark.underline.orange>data debugging</span>!
+
+</v-click>
 
 
 ---
@@ -632,7 +821,6 @@ class: text-center table-center table-invisible p-6
 Thank you for your attention!
 ## [pydvl.org](https://pydvl.org)
 
-<br>
 <div style="display: flex; justify-content: center; align-items:center;">
   <a href="https://pydvl.org">
     <img class="w-25" src="/pydvl-logo.svg" alt="pyDVL logo" />
@@ -646,6 +834,6 @@ PyDVL contributors
 
 |  |  |  |
 |--|--|--|
-| <img src="public/anes.jpeg" alt="Anes Benmerzoug" class="author-thumbnail"> | <img src="public/miguel.png" alt="Miguel de Benito Delgado" class="author-thumbnail"> | <img src="public/janos.jpeg" alt="Janoś Gabler" class="author-thumbnail"> | 
-| <img src="public/jakob.jpeg" alt="Jakob Kruse" class="author-thumbnail"> | <img src="public/markus.jpeg" alt="Markus Semmler" class="author-thumbnail"> | <img src="public/fabio.png" alt="Fabio Peruzzo" class="author-thumbnail"> |
-| <img src="public/kristof.jpg" alt="Kristof Schröder" class="author-thumbnail"> | <img src="public/bastian.png" alt="Bastian Zim" class="author-thumbnail"> | <img src="public/uncle-sam.png" alt="You" class="author-thumbnail"><span style="font-size:small;">You!</span> |
+| <img src="/people/anes.jpeg" alt="Anes Benmerzoug" class="author-thumbnail"> | <img src="/people/miguel.png" alt="Miguel de Benito Delgado" class="author-thumbnail"> | <img src="/people/janos.jpeg" alt="Janoś Gabler" class="author-thumbnail"> | 
+| <img src="/people/jakob.jpeg" alt="Jakob Kruse" class="author-thumbnail"> | <img src="/people/markus.jpeg" alt="Markus Semmler" class="author-thumbnail"> | <img src="/people/fabio.png" alt="Fabio Peruzzo" class="author-thumbnail"> |
+| <img src="/people/kristof.jpg" alt="Kristof Schröder" class="author-thumbnail"> | <img src="/people/bastian.png" alt="Bastian Zim" class="author-thumbnail"> | <img src="/people/uncle-sam.png" alt="You" class="author-thumbnail"><span style="font-size:small;">You!</span> |

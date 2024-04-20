@@ -1,10 +1,18 @@
-# Welcome to [Slidev](https://github.com/slidevjs/slidev)!
+# PyDVL @ PyData 2024 Berlin
 
-To start the slide show:
+These are the slides for the presentation held on March 22nd, 2024 at PyData Berlin.
 
-- `npm install`
-- `npm run dev`
-- visit http://localhost:3030
+
+## Usage
+
+To start the slides:
+
+```shell
+npm install
+npm run dev
+```
+
+There's a live reload server running at http://localhost:3030
 
 Edit the [slides.md](./slides.md) to see the changes.
 
