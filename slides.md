@@ -577,7 +577,7 @@ I(z_i, z) = \nabla_\theta L^\top \cdot H^{-1}_{\theta} \cdot \nabla_\theta L
 $$
 
 <v-click at="2">
-<Arrow x1="360" y1="275" x2="325" y2="195" color="red"/>
+<Arrow x1="360" y1="295" x2="325" y2="215" color="red"/>
 </v-click>
 
 ::right::
