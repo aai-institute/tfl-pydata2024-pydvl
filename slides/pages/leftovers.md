@@ -256,3 +256,56 @@ instead uses those available to construct one.
 
 [click:3] Last click (skip two clicks)
 -->
+
+---
+title: Measuring value with marginal contributions
+level: 1
+layout: two-cols-header
+class: px-6
+---
+
+## Marginal-contribution methods and Shapley values
+
+```python {1-2|3-5}
+model = LogisticRegression()
+train, test = Dataset.from_sklearn(load_iris(), train_size=0.6)
+def u(data):
+    model.fit(data)
+    return model.score(test)
+```
+
+<div v-click class="text-center">
+
+Take one data point $x$
+
+</div>
+
+::left::
+
+<div v-click class="text-center">Take the whole dataset</div>
+
+```python {hide|1|2|3|1-3}
+score = u(train)
+score_without = u(train.drop(x))
+value = score - score_without
+```
+
+<div v-click class="text-center text-bold text-xl">Leave-One-Out</div>
+
+::right::
+
+<div v-click class="text-center">Look at subsets</div>
+
+```python {hide|1-2|3|4|all}
+for subset in sampler.from_data(train):
+  scores.append[u(subset)]
+  scores_without.append[u(subset.drop(x))]
+value = weighted_mean(scores - scores_without, coefficients)
+```
+<div v-click="14" class="text-center text-bold text-xl">Semivalue (e.g. Shapley)</div>
+
+<!--
+[click] LOO is O(n), but very low signal
+
+-->
+

@@ -1,6 +1,6 @@
 ---
 theme: default
-title: Data valuation and attribution
+title: Data valuation for machine learning
 info: |
   ## A primer on data valuation and attribution
   Some examples of how to attribute data sources and how to value data in your projects
@@ -19,9 +19,9 @@ themeConfig:
 hideInToc: true
 ---
 
-# Data valuation and attribution
+# Data valuation for ML
 
-A mild introduction with practical applications
+Detecting mislabelled and out-of-distribution samples with [pyDVL](https://pydvl.org)
 
 
 <div style="display: flex; justify-content: center;">
@@ -29,8 +29,8 @@ A mild introduction with practical applications
 </div>
 
 
-[Kristof Schröder](https://github.com/schroedk) - 
-[Miguel de Benito Delgado](https://mdbenito.8027.org)
+[Miguel de Benito Delgado](https://mdbenito.8027.org) -
+[Kristof Schröder](https://github.com/schroedk)
 
 
 <div style="display: flex; justify-content: center; align-items:center;">
@@ -127,17 +127,8 @@ or
 
 [click:2] What data valuation is not:
 - Differences to SHAP, LIME, etc.
--->
-
----
-layout: fact
-title: Caveat
-hideInToc: true
----
 
 (Actually, it's a bit more complicated)
-
-<!---
 Intrinsic notions of value
 
 Using different scorers,
@@ -208,7 +199,6 @@ assert model.score(test) > 1.05 * previous_accuracy
 
 #### Profit!
 
-TODO:  (of course not all that glitters is gold... etc. )
 </div>
 
 [^1]: https://www.kaggle.com/datasets/paradisejoy/top-hits-spotify-from-20002019
@@ -217,6 +207,8 @@ TODO:  (of course not all that glitters is gold... etc. )
 [click:5] Take these data with a pinch of salt...
 
 [click:4] 1.05 is just a number for the slide of course
+
+[click:6] (of course not all that glitters is gold... etc. )
 -->
 
 ---
@@ -286,7 +278,8 @@ class: px-6 table-invisible
 <v-clicks>
 
 - Any scikit-learn model
-- Or a wrapper with `fit()`, `predict()`, and `score()`
+- Or a wrapper with a `fit()` method
+- A scoring function
 - An _imperfect_ dataset
 - ```shell
   pip install pydvl
@@ -296,14 +289,9 @@ class: px-6 table-invisible
 
 </v-clicks>
 
-
-<v-click>
-
-|   |  |  |
-| --- | --- | --- |
-| <a href="https://pydvl.org"> <img class="w-25" src="/pydvl-logo.svg" alt="pyDVL logo" /> </a> | + | <img class="w-45" src="/elbow-grease.png" alt="All-purpose remedy" /> |
-
-</v-click>
+<div v-click class="text-center">
+<a href="https://pydvl.org"> <img class="w-25" src="/pydvl-logo.svg" alt="pyDVL logo" /> </a>
+</div>
 
 ::right::
 
@@ -316,14 +304,14 @@ class: px-6 table-invisible
 - _Influence Functions_ use `pytorch`
 - Planned: allow `jax` and `torch` everywhere
 - `joblib` for parallelization with all of its backends
-- `dask` for large models
+- `dask` for large datasets
 - `memcached` for caching
 
 </v-click>
 
 <br><br><br>
 
-<div v-after>
+<div v-after class="text-center">
 
 ### pyDVL is still evolving!
 
@@ -422,52 +410,6 @@ with joblib.parallel_backend("ray", n_jobs=48):
 </v-drag>
 </v-click>
 
----
-title: Measuring value with marginal contributions
-level: 1
-layout: two-cols-header
-class: px-6
----
-
-## One family of methods: marginal contributions
-
-```python {1-2|3-5}
-model = LogisticRegression()
-train, test = Dataset.from_sklearn(load_iris(), train_size=0.6)
-def u(data):
-    model.fit(data)
-    return model.score(test)
-```
-
-<div v-click class="text-center">
-
-Take one data point $x$
-
-</div>
-
-::left::
-
-<div v-click class="text-center">Take the whole dataset</div>
-
-```python {hide|1|2|3|1-3}
-score = u(train)
-score_without = u(train.drop(x))
-value = score - score_without
-```
-
-<div v-click class="text-center text-bold text-xl">Leave-One-Out</div>
-
-::right::
-
-<div v-click class="text-center">Look at subsets</div>
-
-```python {hide|1-2|3|4|all}
-for subset in sampler.from_data(train):
-  scores.append[u(subset)]
-  scores_without.append[u(subset.drop(x))]
-value = weighted_mean(scores - scores_without, coefficients)
-```
-<div v-click="14" class="text-center text-bold text-xl">Semivalue (e.g. Shapley)</div>
 
 ---
 layout: two-cols
@@ -484,10 +426,10 @@ This is not a silver bullet
 - <span v-mark.strike-through.orange="2">Consistency</span>
 - <span v-mark.underline.green="1">Model dependence</span>
 
-TODO:
-$O(2^n)$ ? But $O(n \log(n))$ for certain situations.
 
 ::right::
+
+- $O(2^n)$ ? But $O(n \log(n))$ for certain situations.
 
 Janos:
 
@@ -512,8 +454,6 @@ level: 1
 ---
 
 ## The influence of a training point
-
-(on single test points)
 
 
 <!--
@@ -541,9 +481,9 @@ class: table-center p-6
 
 <v-click>
 
-The "influence" of $z_i$ on test point $z$ is roughly
+The "influence" of $z_2$ on test point $z$ is roughly
 
-  $$L(z) - L_{-z_i}(z)$$
+  $$L(z) - L_{-z_2}(z)$$
 
 
 </v-click>
@@ -552,44 +492,20 @@ The "influence" of $z_i$ on test point $z$ is roughly
 
 <v-clicks>
 
-- One value per train / test point pair $(z_i, z)$
-
-- A <span v-mark.underline.red="'4'">full retraining</span> per train / test point pair!
+- One value per training / test point pair $(z_i, z)$
+- A <span v-mark.underline.red="'4'">full retraining</span> per training point!
+- However:
+  $$I(z_i, z) = \nabla_\theta L^\top \cdot H^{-1}_{\theta} \cdot \nabla_\theta L$$
+- Implicit computation and approximations
+- Are they good?
+- <span v-mark.underline.green>Does it matter?</span>
 
 </v-clicks>
 
----
-layout: two-cols-header
-title: Computing influences
-level: 1
-class: p-6
----
-
-## Computing influences
-
-::left::
-
-
-<span v-mark.underline.red>Luckily<span v-click="'1'">?</span></span>
-
-$$
-I(z_i, z) = \nabla_\theta L^\top \cdot H^{-1}_{\theta} \cdot \nabla_\theta L
-$$
-
-<v-click at="2">
-<Arrow x1="360" y1="295" x2="325" y2="215" color="red"/>
+<v-click at="5">
+<Arrow x1="360" y1="295" x2="325" y2="245" color="red"/>
 </v-click>
 
-::right::
-
-<v-clicks>
-
-- Inverse of the Hessian!
-- Implicit Hessian-vector products
-- Quality of the approximations
-- Does it matter?
-
-</v-clicks>
 
 ---
 layout: two-cols-header
@@ -604,7 +520,7 @@ class: table-invisible table-center py-6 no-bullet-points
 
 <v-clicks>
 
-- [**NIH dataset**](https://lhncbc.nlm.nih.gov/LHC-downloads/downloads.html#malaria-datasets) for malaria screening[^1]
+- [**NIH dataset**](https://lhncbc.nlm.nih.gov/LHC-downloads/downloads.html#malaria-datasets) with ~28K images for malaria screening[^1]
 - ![](/malaria/some-images-could-be-mislabelled.png)
 - **Goal:** detect these data points with pyDVL
 
@@ -619,13 +535,14 @@ class: table-invisible table-center py-6 no-bullet-points
 </div>
 
 ::right::
-TODO: This after the results?
 <br>
+<br>
+
 <v-click>
 
 ````md magic-move
 
-```python {hide|4|5|7-8|10|all|4,7}
+```python {hide|1-4|5|7-8|10|all|4,7}
 torch_model = ...  # Trained model
 train, test = ... # Dataloaders
 
@@ -635,7 +552,7 @@ if_model.fit(train)
 if_calc = SequentialInfluenceCalculator(if_model)
 lazy_values = if_calc.influences(test, train)
 
-values = lazy_values.to_zarr(path, ...)
+values = lazy_values.to_zarr(path, ...)  # memmapped
 ```
 
 ```python {4,7}
@@ -648,7 +565,7 @@ if_model.fit(train)
 if_calc = SequentialInfluenceCalculator(if_model)
 lazy_values = if_calc.influences(test, train)
 
-values = lazy_values.to_zarr(path, ...)
+values = lazy_values.to_zarr(path, ...)  # memmapped
 ```
 
 ```python {4,7}
@@ -661,7 +578,7 @@ if_model.fit(train)
 if_calc = SequentialInfluenceCalculator(if_model)
 lazy_values = if_calc.influences(test, train)
 
-values = lazy_values.to_zarr(path, ...)
+values = lazy_values.to_zarr(path, ...)  # memmapped
 ```
 
 ```python {4,7}
@@ -674,7 +591,7 @@ if_model.fit(train)
 if_calc = DaskInfluenceCalculator(if_model)
 lazy_values = if_calc.influences(test, train)
 
-values = lazy_values.to_zarr(path, ...)
+values = lazy_values.to_zarr(path, ...)   # memmapped
 ```
 ````
 
@@ -684,7 +601,7 @@ values = lazy_values.to_zarr(path, ...)
 
 <br>
 
-Plus CG, LiSSa, E-KFAC, ...
+(Plus CG, LiSSa, E-KFAC, ...)
 
 </div>
 
@@ -692,23 +609,28 @@ Plus CG, LiSSa, E-KFAC, ...
 [^1]: https://www.kaggle.com/iarunava/cell-images-for-detecting-malaria
 
 ---
-hideInToc: true
-layout: two-cols
+title: "Example 3: process"
+level: 1
+layout: two-cols-header
 class: p-6
 ---
 
-## Results
+::left::
 
-<br>
+## Process
 
 <v-clicks>
 
 - Compute all pairs of influences
-- For each training point, compute the 25th percentile
-- Sort training points by this value
-- Look at the K smallest ones
+- For each training point: 25th percentile of influences (same labels)
 
 </v-clicks>
+
+<img v-click src="/malaria/histogram.png">
+
+<Arrow v-click x1="300" y1="300" x2="300" y2="420" color="red"/>
+
+<Arrow v-click x1="297" y1="415" x2="200" y2="415" color="blue"/>
 
 ::right::
 
@@ -716,7 +638,6 @@ class: p-6
 
 Cells labelled as healthy
 <img src="/malaria/smallest_3_0.25_quantile_influence_uninfected_uninfected.png" alt="Cells labelled as healthy" class="w-100">
-
 </v-click>
 
 <v-click>
@@ -729,33 +650,48 @@ Cells labelled as parasitized
 <img src="/malaria/smallest_3_0.25_quantile_influence_parasitized_parasitized.png" alt="Cells labelled as parasitized" class="w-100">
 </v-click>
 
-<v-click>
-<Arrow x1="600" y1="450" x2="670" y2="390" color="green"/>
-</v-click>
+<Arrow v-click x1="600" y1="450" x2="670" y2="390" color="green"/>
 
-
+<!--
+[click:5] Cells from training set which were labelled as healthy, picked as having low influence over healthy test cells
+-->
 
 ---
 layout: two-cols-header
+level: 1
+class: p-6
 ---
 
 ## Accelerating IF computation
 
+<br>
 
 ::left::
+
+<v-click>
+
+#### Problems
+
+</v-click>
+
 <v-clicks>
 
-- Where the problem lies
-- What fits in my GPU?
-- What can we do
+- Computational complexity: $H^{-1}_{\theta} \nabla_\theta L$
+- Memory complexity: how many gradients fit on the device?
 
 </v-clicks>
 
 ::right::
 
+<v-click>
+
+#### What can we do?
+
+</v-click>
+
 <v-clicks>
 
-- Approximations
+- Approximation of the inverse Hessian vector product
 - Parallelization
 - Out-of-core computation
 
@@ -763,10 +699,22 @@ layout: two-cols-header
 
 ::bottom::
 
-```python
-# Maybe an example here
-
+<v-click>
+````md magic-move
+```python {1,3}
+if_model = DirectInfluence(torch_model, loss, ...)
+(...)
+if_calc = SequentialInfluenceCalculator(if_model)
 ```
+
+```python {1,3-5}
+if_model = NystroemSketchInfluence(torch_model, loss, rank=10, ...)
+(...)
+client = Client(LocalCUDACluster())
+if_calc = DaskInfluenceCalculator(if_model, client)
+```
+````
+</v-click>
 
 ---
 title: Picking methods
@@ -778,6 +726,7 @@ class: p-6 text-center no-bullet-points
 ## How to choose between IF and DV?
 
 <br>
+<br>
 
 ::left::
 
@@ -787,7 +736,7 @@ class: p-6 text-center no-bullet-points
  
 - Large models with costly retrainings
 - `torch` interface
-- Single test point
+- Point to point valuation
 
 </v-clicks>
 
@@ -799,7 +748,7 @@ class: p-6 text-center no-bullet-points
 
 - Smaller models
 - `sklearn` interface
-- Value over the whole test set
+- Value over a test set
 
 </v-clicks>
 
