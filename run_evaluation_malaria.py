@@ -88,7 +88,6 @@ def compute_influences(
 
     model.eval()
     if_model = DirectInfluence(model, loss_fn, hessian_regularization=0.001)
-    print("Fitting DirectInfluence")
     if_model.fit(train_loader)
 
     if_calc = SequentialInfluenceCalculator(if_model)
