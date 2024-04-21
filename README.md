@@ -44,10 +44,18 @@ npm install
 npm run dev
 ```
 
-There's a live reload server running at http://localhost:3030
-
-Edit the [slides.md](./slides/slides.md) to see the changes.
+There's a live reload server running at http://localhost:3030. Edit
+[slides.md](./slides/slides.md) to see the changes.
 
 The slides are deployed with Netlify to
 [pydvl-at-pydata2024.netlify.app](https://pydvl-at-pydata2024.netlify.app/)
 upon every push to master.
+
+To export them as PDF run
+
+```shell
+npm run export -- --with-clicks
+```
+
+If using VSCode, it is recommended to open the subfolder `slides` as a workspace
+to benefit from the Slidev extension.
