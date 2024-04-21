@@ -74,6 +74,7 @@ th {
   th,
   td {
     text-align: center;
+
     img {
       display: inline-block;
     }
@@ -103,6 +104,12 @@ img.author-thumbnail {
   }
 }
 
-h1, h2, h3, h4 {
+h1,
+h2,
+h3 {
   padding-bottom: 1.3rem;
+}
+
+h4 {
+  padding-bottom: 1rem;
 }
