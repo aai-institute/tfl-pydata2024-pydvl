@@ -8,6 +8,12 @@ from torchvision.models import ResNet18_Weights
 
 
 class Resnet18Binary(nn.Module):
+    """
+    Pretrained (imagenet) Resnet18 model adapted to binary classification.
+    The last layer is modified to a two-dimensional output and contains
+    the learnable parameters of the model only.
+    """
+
     def __init__(self):
         super().__init__()
         self.model = models.resnet18(weights=ResNet18_Weights.IMAGENET1K_V1)
@@ -24,6 +30,11 @@ class Resnet18Binary(nn.Module):
 
 
 class LitResnet18SmallBinary(pl.LightningModule):
+    """
+    A simple pytorch lightning wrapper for a binary Resnet18 classification
+    model. For simplicity, the optimizer parameters are not exposed.
+    """
+
     def __init__(self):
         super(LitResnet18SmallBinary, self).__init__()
         self.model = Resnet18Binary()

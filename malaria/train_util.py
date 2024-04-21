@@ -8,6 +8,16 @@ from pytorch_lightning.loggers import Logger
 
 
 def model_tag_builder(max_epochs: int, batch_size: int) -> str:
+    """
+    Constructs a string tag combining the maximum epochs and batch size.
+
+    Args:
+        max_epochs: The maximum number of epochs for model training.
+        batch_size: The number of samples in each batch of data.
+
+    Returns:
+        A string tag formatted as 'max_epochs={max_epochs}-batch_size={batch_size}'.
+    """
     return f"{max_epochs=}-{batch_size=}"
 
 
@@ -22,20 +32,23 @@ def simple_train(
     load: bool = True,
 ) -> LightningModule:
     """
-    Simple training routine
+    Trains a given model using the specified training and validation datasets,
+    and handles checkpointing.
 
     Args:
-        logger:
-        model:
-        train_data:
-        val_data:
-        batch_size:
-        max_epochs:
-        checkpoint_base_dir:
-        load:
+        model: The PyTorch Lightning model to be trained.
+        train_data: The dataset to be used for training the model.
+        val_data: The dataset to be used for validating the model.
+        batch_size: The number of samples per batch.
+        max_epochs: The maximum number of training epochs.
+        checkpoint_base_dir: The base directory for saving model checkpoints.
+        logger: An optional logger compatible with PyTorch Lightning, for logging
+            training progress.
+        load: A flag to determine whether to load the model from an existing checkpoint
+            if available.
 
     Returns:
-
+        The trained model loaded from the best checkpoint.
     """
 
     file_name = model_tag_builder(max_epochs, batch_size)
@@ -52,10 +65,7 @@ def simple_train(
         enable_version_counter=False,
     )
     train_loader = DataLoader(
-        train_data,
-        batch_size=batch_size,
-        shuffle=True,
-        num_workers=28
+        train_data, batch_size=batch_size, shuffle=True, num_workers=28
     )
     val_loader = DataLoader(
         val_data,
