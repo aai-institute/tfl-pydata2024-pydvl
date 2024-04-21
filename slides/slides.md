@@ -57,26 +57,6 @@ Detecting mislabelled and out-of-distribution samples with [pyDVL](https://pydvl
 -->
 
 ---
-transition: fade-out
-layout: two-cols
-hideInToc: true
----
-
-## Plan for the talk
-
-This is just temporary for ourselves
-
-MAX OF 10 SLIDES!!!
-
-::right::
-
-<AutoFitText :max="26" :min="8">
-
-<Toc v-click minDepth="1" maxDepth="1"></Toc>
-
-</AutoFitText>
-
----
 layout: fact
 hideInToc: true
 title: What
@@ -942,3 +922,16 @@ li {
   padding-top:2rem;
 }
 </style>
+
+---
+transition: fade-out
+hideInToc: true
+---
+
+## Table of contents
+
+<AutoFitText :max="16" :min="8">
+
+<Toc v-click minDepth="1" maxDepth="1"></Toc>
+
+</AutoFitText>
