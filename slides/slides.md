@@ -262,13 +262,14 @@ class: p-6
 
 ::left::
 
-### This bears repeating:
+### This bears repeating
 
 ```python
 model.fit(clean_data)
 assert model.score(test) > 1.05 * previous_score
 ```
 
+<br>
 <v-clicks>
 
 - Increase accuracy by removing bogus points
@@ -282,21 +283,26 @@ assert model.score(test) > 1.05 * previous_score
 
 ::right::
 
-<div v-click>
+<v-click>
 
-### But also:
+### But also
 
 - **Data acquisition**: prioritize data sources
 - **Attribution**: find the most important data points
 
-And more speculatively:
+</v-click>
+
+<v-click>
+<br>
+
+### And more speculatively
 
 - **Continual learning**: compress your dataset
 - **Data markets**: price your data
 - Improve **fairness metrics**
 - ...
 
-</div>
+</v-click>
 
 ---
 layout: fact
