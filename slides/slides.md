@@ -157,29 +157,85 @@ class: p-6 table-center
 
 ::right::
 
-<div v-click="'+1'">
+<v-click>
 
-### Three steps
+#### Four steps
 
+````md magic-move
 
-</div>
-
-```python {hide|1-2|4-5|7}
-values = valuation.fit(data).values()
-values.sort()
-
-clean_data = data.drop_indices(values[:100].indices)
-model.fit(clean_data)
-
-assert model.score(test) > 1.05 * previous_accuracy
+// First example
+```python {none|1-2|3-4|5-9|all}
+train, val, test = load_spotify_dataset(...)
+model = GradientBoostingRegressor(n_estimators=10)
+scorer = SupervisedScorer("accuracy", test)
+utility = Utility(model, scorer)
+valuation = DataShapleyValuation(
+    utility, MSRSampler(), RankCorrelation()
+)
+with joblib.parallel_backend("loky", n_jobs=16):
+    valuation.fit(train)
 ```
-<br>
+
+```python {2-3}
+train, test = load_data()
+model = AnyModel()
+scorer = CustomScorer(test)
+utility = Utility(model, scorer)
+valuation = DataShapleyValuation(
+    utility, MSRSampler(), RankCorrelation()
+)
+with joblib.parallel_backend("loky", n_jobs=16):
+    valuation.fit(train)
+```
+
+```python {5-7}
+train, test = load_data()
+model = AnyModel()
+scorer = CustomScorer(test)
+utility = Utility(model, scorer)
+valuation = AnyValuationMethod(
+    utility, SomeSampler(), StoppingCriterion()
+)
+with joblib.parallel_backend("loky", n_jobs=16):
+    valuation.fit(train)
+```
+
+```python {8-9}
+train, test = load_data()
+model = AnyModel()
+scorer = CustomScorer(test)
+utility = Utility(model, scorer)
+valuation = AnyValuationMethod(
+    utility, SomeSampler(), StoppingCriterion()
+)
+with joblib.parallel_backend("ray", n_jobs=48):
+    valuation.fit(train)
+```
+````
+
+</v-click>
+
+```python {hide|1-2|4-5|all}
+values = valuation.values(sort=True)
+clean_data = data.drop_indices(values[:100].indices)
+
+model.fit(clean_data)
+assert model.score(test) > 1.05 * previous_score
+```
 
 <div v-after class="text-center">
 
 #### Profit!
 
 </div>
+
+<v-click>
+<v-drag pos="836,160,80,80,36">
+<div text-center>(New interface)</div>
+</v-drag>
+</v-click>
+
+
 
 [^1]: https://www.kaggle.com/datasets/paradisejoy/top-hits-spotify-from-20002019
 
@@ -206,7 +262,7 @@ class: p-6
 
 ```python
 model.fit(clean_data)
-assert model.score(test) > 1.05 * previous_accuracy
+assert model.score(test) > 1.05 * previous_score
 ```
 
 <v-clicks>
@@ -297,126 +353,32 @@ class: px-6 table-invisible
 
 </div>
 
----
-layout: two-cols-header
-class: pr-6 pt-6 table-center
----
-
-## Example 2: Finding mislabeled data
-
-::left::
-
-<div v-click>
-
-- Again: Predict song popularity
-- Corrupt 5% of data at random setting<br>their popularity to 0
-- Task: Detect these data points
-
-</div>
-
-<div v-click>
-
-| % low values | Mislabeled data |
-|--------------|-----------------|
-| 10%          | 60%             |
-| 15%          | 85%             |
-| 20%          | 100%            |
-
-</div>
-
-::right::
-
-<v-click>
-
-### Three steps
-
-````md magic-move
-
-// First example
-```python {none|1-2|3-4|5-9|all}
-train, val, test = load_spotify_dataset(...)
-model = GradientBoostingRegressor(n_estimators=10)
-scorer = SupervisedScorer("accuracy", test)
-utility = Utility(model, scorer)
-valuation = DataShapleyValuation(
-    utility, MSRSampler(), RankCorrelation()
-)
-with joblib.parallel_backend("loky", n_jobs=16):
-    valuation.fit(train)
-```
-
-```python {2-3}
-train, test = load_data()
-model = AnyModel()
-scorer = CustomScorer(test)
-utility = Utility(model, scorer)
-valuation = DataShapleyValuation(
-    utility, MSRSampler(), RankCorrelation()
-)
-with joblib.parallel_backend("loky", n_jobs=16):
-    valuation.fit(train)
-```
-
-```python {5-7}
-train, test = load_data()
-model = AnyModel()
-scorer = CustomScorer(test)
-utility = Utility(model, scorer)
-valuation = AnyValuationMethod(
-    utility, SomeSampler(), StoppingCriterion()
-)
-with joblib.parallel_backend("loky", n_jobs=16):
-    valuation.fit(train)
-```
-
-```python {8-9}
-train, test = load_data()
-model = AnyModel()
-scorer = CustomScorer(test)
-utility = Utility(model, scorer)
-valuation = AnyValuationMethod(
-    utility, SomeSampler(), StoppingCriterion()
-)
-with joblib.parallel_backend("ray", n_jobs=48):
-    valuation.fit(train)
-```
-````
-
-</v-click>
-
-<v-click>
-<v-drag pos="813,188,80,80,36">
-<div text-center>(New interface)</div>
-</v-drag>
-</v-click>
-
 
 ---
-layout: two-cols
+layout: two-cols-center
 title: Problems with data valuation
 level: 1
 ---
 
 ## Where's the catch?
 
-This is not a silver bullet
-
 - <span v-mark.underline.red="3">Computational cost</span>
 - <span v-mark.underline.red="3">Convergence</span>
 - <span v-mark.strike-through.orange="2">Consistency</span>
-- <span v-mark.underline.green="1">Model dependence</span>
+- <span v-mark.underline.green="1">Model and metric dependence</span>
 
 
 ::right::
 
-- $O(2^n)$ ? But $O(n \log(n))$ for certain situations.
+<div v-click="'4'">
 
-Janos:
+- Shapley & co. $O(2^n)$ _in principle_
+- But $O(n \log(n))$ for certain situations.
+- Proxy models (value transfer)
+- Model-specific assumptions (KNN, Data-OOB, ...)
 
-- Only the metric used for data valuation is actually improved when dropping data; Other metrics even get worse. I tried MAE, MSE and MAPE
-- The dataset is very small
-- Detecting corrupted data only worked when using more max-draws and stricter convergence criteria than in the tutorial. The result is still dependent on the seed
-- All of this is for one random seed!
+</div>
+
 
 <!--
 [click] New methods are appearing that look at data distributions, independently of the model. Also, the model can be changed to a simpler one, or a surrogate model can be used (KNN-Shapley).
@@ -493,7 +455,7 @@ level: 1
 class: table-invisible table-center py-6 no-bullet-points
 ---
 
-## Example 3: Finding mislabeled cells
+## Example 2: Finding mislabeled cells
 
 
 ::left::
@@ -589,7 +551,7 @@ values = lazy_values.to_zarr(path, ...)   # memmapped
 [^1]: https://www.kaggle.com/iarunava/cell-images-for-detecting-malaria
 
 ---
-title: "Example 3: process"
+title: "Example 2: procedure"
 level: 1
 layout: two-cols-header
 class: p-6
@@ -597,7 +559,7 @@ class: p-6
 
 ::left::
 
-## Process
+## Procedure
 
 <v-clicks>
 
