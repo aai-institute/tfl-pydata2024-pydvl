@@ -148,4 +148,3 @@ class DefaultMetrics(Enum):
     QuantileInfluence0_25 = QuantileInfluence(0.25)
     QuantileInfluenceUninfected0_25 = QuantileInfluenceUninfected(0.25)
     QuantileInfluenceParasitized0_25 = QuantileInfluenceParasitized(0.25)
-
