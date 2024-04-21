@@ -75,7 +75,7 @@ transition: fade-out
 
 <v-click>
 
-the **contribution** of a data point ...
+the **contribution** of a training point to...
 
 </v-click>
 
@@ -89,35 +89,41 @@ or
 
 <v-click>
 
-...to the overall **model performance**
-
-(global methods: Shapley & co.)
+the overall **model performance**
 
 </v-click>
+
+<div v-click="4" class="text-center">
+
+("global" methods: Data Shapley & co.)
+
+</div>
 
 ::right::
 
 
 <v-click>
 
-...to a **single prediction**
-
-(local methods: influences)
+a **single prediction**
 
 </v-click>
+
+<div v-click="5" class="text-center">
+
+("local" methods: influences)
+
+</div>
 
 
 <!--
 
-[click:2] What data valuation is not:
+What data valuation is not:
 - Differences to SHAP, LIME, etc.
 
 (Actually, it's a bit more complicated)
+
 Intrinsic notions of value
 
-Using different scorers,
-
-etc.
 -->
 
 ---
@@ -148,15 +154,14 @@ utility(some_data) := model.fit(some_data).score(validation)
 
 <div v-click="4" class="text-center">
 
-Take <span v-mark.underline.orange="11">one data point</span> $x$
+Take <span v-mark.underline.orange="11">one training point</span> $x \in T$
 
 </div>
 </div>
 
-```python {hide|1-2|4-6}
+```python {hide|1-2|3-5}
 model = LogisticRegression(...)
-train, val, test = load_dataset(...)
-
+train, val, test = split_dataset(...)
 def u(some_data):  # utility
     model.fit(some_data)
     return model.score(val)
@@ -164,28 +169,29 @@ def u(some_data):  # utility
 
 </div>
 
+<br>
 
 ::left::
 
 <div v-click="'+2'" class="text-center">1: Contribution to the whole dataset</div>
 
 ```python {hide|1|2|3|1-3}
-score = u(train)
+score_with = u(train)
 score_without = u(train.drop(x))
-value = score - score_without
+value = score_with - score_without
 ```
 
 <div v-click class="text-center text-bold text-xl">Leave-One-Out</div>
 
 <v-click>
 
-$$\text{value} = u(\text{train}) - u(\text{train} \setminus \{x\})$$
+$$\text{value}(x) = u(T) - u(T \setminus \{x\})$$
 
 </v-click>
 
 <div v-click class="text-center">
 
-$\mathcal{O}(n)$
+$n$ retrainings, low signal
 
 </div>
 
@@ -194,25 +200,25 @@ $\mathcal{O}(n)$
 <div v-click class="text-center">2: Contribution to subsets</div>
 
 ```python {hide|1-2|3|4|all}
-for subset in sampler.from_data(train):
-  scores.append[u(subset)]
-  scores_without.append[u(subset.drop(x))]
-value = weighted_mean(scores - scores_without, coefficients)
+for subset in sampler.from_data(train.drop(x)):
+  scores_with.append[u(subset.union({x}))]
+  scores_without.append[u(subset)]
+value = weighted_mean(scores_with - scores_without, coefficients)
 ```
 
-<div v-click="18" class="text-center text-bold text-xl">
-  Semivalue (e.g. Shapley)
+<div v-click class="text-center text-bold text-xl">
+  Semivalue (e.g. Data Shapley)
 </div>
 
-<div v-click="'+2'">
+<div v-click>
 
-$$\text{value} = \sum_{S \subseteq \text{train}} w(S) \left[ u(S) - u(S \setminus \{x\}) \right]$$
+$$\text{value}(x) = \sum_{S \subseteq T \setminus \{x\}} w(S) \left[ u(S \cup \{x\}) - u(S) \right]$$
 
 </div>
 
 <div v-click class="text-center">
 
-$\mathcal{O}(2^n)$ <span v-mark.underline.red>(naive)</span>
+$2^{n-1}$ retrainings <span v-mark.underline.red>(naive)</span>
 
 </div>
 
@@ -241,20 +247,21 @@ class: p-4 table-center
 
 - [Top Hits Spotify from 2000-2019](https://www.kaggle.com/datasets/paradisejoy/top-hits-spotify-from-20002019)[^1]
 - Predict song popularity
-- Simple `GradientBoostingRegressor`
-- Drop "bad" data points
+- `GradientBoostingRegressor`
+- Compute values for all training points
+- Drop low-valued ones
 </v-clicks>
 
 <br>
 
-<v-after>
+<div v-click>
 
 | Data dropped | MAE improvement |
 |--------------|-----------------|
-| 10%          | 9%              |
-| 15%          | 11%             |
+| 10%          | 8% (+- 2%)      |
+| 15%          | 10% (+- 3%)     |
 
-</v-after>
+</div>
 
 ::right::
 
@@ -265,51 +272,43 @@ Three steps
 ````md magic-move
 
 // First example
-```python {none|1-2|3-4|5-9|all}
+```python {none|1-2|3-4|5-7|all}
 train, val, test = load_spotify_dataset(...)
 model = GradientBoostingRegressor(...)
 scorer = SupervisedScorer("accuracy", val)
 utility = Utility(model, scorer)
-valuation = DataShapleyValuation(
-    utility, MSRSampler(), RankCorrelation()
-)
+valuation = DataShapleyValuation(utility, ...)
 with joblib.parallel_backend("loky", n_jobs=16):
     valuation.fit(train)
 ```
 
-```python {2-3}
+```python {2,3}
 train, val, test = load_data()
 model = AnyModel()
 scorer = CustomScorer(val)
 utility = Utility(model, scorer)
-valuation = DataShapleyValuation(
-    utility, MSRSampler(), RankCorrelation()
-)
+valuation = DataShapleyValuation(utility, ...)
 with joblib.parallel_backend("loky", n_jobs=16):
     valuation.fit(train)
 ```
 
-```python {5-7}
+```python {5}
 train, val, test = load_data()
 model = AnyModel()
 scorer = CustomScorer(val)
 utility = Utility(model, scorer)
-valuation = AnyValuationMethod(
-    utility, SomeSampler(), StoppingCriterion()
-)
+valuation = AnyValuationMethod(utility, ...)
 with joblib.parallel_backend("loky", n_jobs=16):
     valuation.fit(train)
 ```
 
-```python {8-9}
+```python {6,7}
 train, val, test = load_data()
 model = AnyModel()
 scorer = CustomScorer(val)
 utility = Utility(model, scorer)
-valuation = AnyValuationMethod(
-    utility, SomeSampler(), StoppingCriterion()
-)
-with joblib.parallel_backend("ray", n_jobs=48):
+valuation = AnyValuationMethod(utility, ...)
+with joblib.parallel_backend("ray", n_jobs=480):
     valuation.fit(train)
 ```
 ````
@@ -327,7 +326,7 @@ values = valuation.values(sort=True)
 clean_data = data.drop_indices(values[:100].indices)
 
 model.fit(clean_data)
-assert model.score(test) > 1.05 * previous_score
+assert model.score(test) > 1.02 * previous_score
 ```
 
 <div v-after class="text-center">
@@ -337,8 +336,8 @@ assert model.score(test) > 1.05 * previous_score
 </div>
 
 <v-click>
-<v-drag pos="833,111,80,80,36">
-<div text-center>(New interface)</div>
+<v-drag pos="842,91,80,80,36">
+<div text-center>new interface: v0.10</div>
 </v-drag>
 </v-click>
 
@@ -347,11 +346,11 @@ assert model.score(test) > 1.05 * previous_score
 [^1]: https://www.kaggle.com/datasets/paradisejoy/top-hits-spotify-from-20002019
 
 <!--
-[click:5] Take these data with a pinch of salt...
+[click:6] Take these data with a pinch of salt...
 
-[click:4] 1.05 is just a number for the slide of course
+[click:10] 1.05 is just a number for the slide
 
-[click:6] (of course not all that glitters is gold... etc. )
+[click:11] (of course not all that glitters is gold... etc. )
 -->
 
 ---
@@ -369,14 +368,14 @@ class: p-6
 
 ```python
 model.fit(clean_data)
-assert model.score(test) > 1.05 * previous_score
+assert model.score(test) > 1.02 * previous_score
 ```
 
 <br>
 <v-clicks>
 
 - Increase accuracy by removing bogus points
-- Crucially, select data for **inspection**
+- Crucially: select data for **inspection**
 - **Data debugging**<br>
   _what's wrong with this data?_
 - **Model debugging**<br>
@@ -430,7 +429,6 @@ class: px-6 table-invisible
 - Or a wrapper with a `fit()` method
 - A scoring function
 - An _imperfect_ dataset
-- Compute
 
 </v-clicks>
 
