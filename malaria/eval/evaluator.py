@@ -26,6 +26,21 @@ logger = logging.getLogger(__name__)
 
 @dataclass(frozen=True)
 class InfluenceEvaluationInput:
+    """
+    Dataclass to manage input data for evaluating the influence of training data points
+    on test data predictions. This class provides functionality to extract labels,
+    determine subsets of indices for specific label and file path extraction for
+    training data. It serves as a container class for the `influence_value_array`,
+    adding useful meta-information.
+
+    Attributes:
+        influence_value_array: An array of computed influence values.
+        dataset: A dataset loaded through torchvision ImageFolder
+            containing the corresponding image data and targets, which were used
+            to compute the `influence_value_array`
+        test_indices: Indices of test data points within the `dataset`.
+        train_indices: Indices of train data points within the `dataset`.
+    """
     influence_value_array: NDArray
     dataset: ImageFolder
     test_indices: List[int]
@@ -33,10 +48,23 @@ class InfluenceEvaluationInput:
 
     @cached_property
     def train_labels(self) -> List[int]:
+        """
+        Retrieves the labels for training images from the dataset based on provided
+        indices.
+
+        Returns:
+            A list of labels corresponding to the training indices.
+        """
         return [self.dataset.targets[idx] for idx in self.train_indices]
 
     @cached_property
     def uninfected_test_indices(self) -> List[int]:
+        """
+        Filters and returns indices of uninfected images within the test dataset.
+
+        Returns:
+            Indices of uninfected test images.
+        """
         uninfected_test_indices = [
             idx
             for idx, value in enumerate(self.test_labels)
@@ -47,6 +75,12 @@ class InfluenceEvaluationInput:
 
     @cached_property
     def parasitized_test_indices(self) -> List[int]:
+        """
+        Filters and returns indices of parasitized images within the test dataset.
+
+        Returns:
+            Indices of parasitized test images.
+        """
         parasitized_test_indices = [
             idx
             for idx, value in enumerate(self.test_labels)
@@ -57,10 +91,24 @@ class InfluenceEvaluationInput:
 
     @cached_property
     def test_labels(self) -> List[int]:
+        """
+        Retrieves the labels for test images from the dataset based on the provided
+        indices.
+
+        Returns:
+            A list of labels corresponding to the test indices.
+        """
         return [self.dataset.targets[idx] for idx in self.test_indices]
 
     @cached_property
     def train_relative_file_path(self) -> List[Path]:
+        """
+        Generates and retrieves relative file paths (relative to the root of the
+        `dataset`) of training images based on their indices.
+
+        Returns:
+            Relative file paths of the training images.
+        """
         root_path = Path(self.dataset.root)
         relative_file_paths = []
 
@@ -72,17 +120,42 @@ class InfluenceEvaluationInput:
         return relative_file_paths
 
     def to_pickle(self, pickle_path: str):
+        """
+        Serializes the current instance of InfluenceEvaluationInput to a pickle file.
+
+        Args:
+            pickle_path: The file path to save the serialized object.
+        """
         with open(pickle_path, "wb") as file:
             pickle.dump(self, file)
 
     @staticmethod
     def from_pickle(pickle_path: str) -> "InfluenceEvaluationInput":
+        """
+        Deserializes an InfluenceEvaluationInput instance from a pickle file.
+
+        Args:
+            pickle_path: The file path from which to load the serialized object.
+
+        Returns:
+            An instance of InfluenceEvaluationInput loaded from the pickle file.
+        """
         with open(pickle_path, "rb") as file:
             return pickle.load(file)
 
 
 @dataclass(frozen=True)
 class InfluenceEvaluationResult:
+    """
+    A class that encapsulates the results of an influence evaluation in a pandas
+    DataFrame. It provides methods to generate histograms and image plots based on the
+    metric values for visual analysis of the results.
+
+    Attributes:
+        eval_df: DataFrame containing the evaluation results.
+        metric_columns: List of column names in `eval_df` that correspond to different
+            evaluation metrics.
+    """
     eval_df: pd.DataFrame
     metric_columns: List[str]
 
@@ -93,6 +166,20 @@ class InfluenceEvaluationResult:
         plot_base_path: Optional[str] = None,
         **hist_kwargs,
     ):
+        """
+       Generates and optionally saves a histogram plot for the specified metric.
+
+       Args:
+           metric: The metric to plot, either as a string or an EvalMetric instance.
+           filter_label: Optional label to filter the dataset before plotting.
+           plot_base_path: If provided, the path where the plot image will be saved.
+           **hist_kwargs: Additional keyword arguments to pass to
+                seaborn's histplot function.
+
+       Raises:
+           ValueError: If `metric` is not a column in `metric_columns`.
+
+       """
         if isinstance(metric, EvalMetric):
             metric_name = metric.name
         else:
@@ -142,6 +229,21 @@ class InfluenceEvaluationResult:
         filter_label: Optional[Label] = None,
         plot_base_path: Optional[str] = None,
     ):
+        """
+        Generates a grid plot of images corresponding to the smallest `k` values of a
+        specified metric. Optionally saves the plot.
+
+        Args:
+            metric: The metric to use for selecting the smallest values.
+            smallest_k: The number of entries to include in the plot.
+            data_cell_base_path: The base path where the image files are located.
+            filter_label: If provided, filters the entries to those matching the
+                specified label.
+            plot_base_path: If provided, the path where the plot image will be saved.
+
+        Raises:
+            ValueError: If `metric` is not a column in `metric_columns`.
+        """
         metric_name = metric.name if isinstance(metric, EvalMetric) else metric
 
         if metric_name not in self.metric_columns:
@@ -176,7 +278,7 @@ class InfluenceEvaluationResult:
             ax.set_title(f"{image_path}")
             ax.axis("off")
 
-        for ax in axes[len(smallest_k_df) :]:
+        for ax in axes[len(smallest_k_df):]:
             ax.axis("off")
 
         if plot_base_path:
@@ -194,10 +296,24 @@ class InfluenceEvaluationResult:
 
 
 class InfluenceEvaluator:
+    """
+    Class responsible for computing metrics/statistics on influence values.
+
+    Attributes:
+        metrics : A list of evaluation metrics to be used for computing statistics.
+    """
     def __init__(
         self,
         metrics: Optional[List[EvalMetric]] = None,
     ):
+        """
+        Initializes the InfluenceEvaluator with a set of metrics.
+
+        If no metrics are provided, default metrics from DefaultMetrics enum are used.
+
+        Args:
+            metrics: A list of evaluation metrics, or None to use defaults.
+        """
         if metrics is None:
             metrics = [metric.value for metric in DefaultMetrics]
 
@@ -210,6 +326,23 @@ class InfluenceEvaluator:
     def get_eval_result(
         self, eval_input: InfluenceEvaluationInput
     ) -> InfluenceEvaluationResult:
+        """
+        Evaluates the influence of training data using the provided
+        InfluenceEvaluationInput and returns the results.
+
+        This method orchestrates the evaluation by generating a DataFrame from the
+        input, computing metrics and packaging the results into an
+        InfluenceEvaluationResult object.
+
+        Args:
+            eval_input: The input data containing indices and
+                datasets required for the evaluation.
+
+        Returns:
+            InfluenceEvaluationResult: An object containing the DataFrame with the
+                computed metrics and column names.
+        """
+
         df = self._generate_df(eval_input)
         metric_columns = self.metric_names
         return InfluenceEvaluationResult(df, metric_columns)
