@@ -126,14 +126,12 @@ hideInToc: true
 ---
 level: 1
 title: "Example 1: Data cleaning"
-layout: two-cols-header
-class: p-6 table-center
+layout: two-cols
+class: p-4 table-center
 ---
 
 ## Example 1: Data cleaning
 
-
-::left::
 
 <v-clicks>
 
@@ -159,15 +157,15 @@ class: p-6 table-center
 
 <v-click>
 
-#### Four steps
+Three steps
 
 ````md magic-move
 
 // First example
 ```python {none|1-2|3-4|5-9|all}
 train, val, test = load_spotify_dataset(...)
-model = GradientBoostingRegressor(n_estimators=10)
-scorer = SupervisedScorer("accuracy", test)
+model = GradientBoostingRegressor(...)
+scorer = SupervisedScorer("accuracy", val)
 utility = Utility(model, scorer)
 valuation = DataShapleyValuation(
     utility, MSRSampler(), RankCorrelation()
@@ -177,9 +175,9 @@ with joblib.parallel_backend("loky", n_jobs=16):
 ```
 
 ```python {2-3}
-train, test = load_data()
+train, val, test = load_data()
 model = AnyModel()
-scorer = CustomScorer(test)
+scorer = CustomScorer(val)
 utility = Utility(model, scorer)
 valuation = DataShapleyValuation(
     utility, MSRSampler(), RankCorrelation()
@@ -189,9 +187,9 @@ with joblib.parallel_backend("loky", n_jobs=16):
 ```
 
 ```python {5-7}
-train, test = load_data()
+train, val, test = load_data()
 model = AnyModel()
-scorer = CustomScorer(test)
+scorer = CustomScorer(val)
 utility = Utility(model, scorer)
 valuation = AnyValuationMethod(
     utility, SomeSampler(), StoppingCriterion()
@@ -201,9 +199,9 @@ with joblib.parallel_backend("loky", n_jobs=16):
 ```
 
 ```python {8-9}
-train, test = load_data()
+train, val, test = load_data()
 model = AnyModel()
-scorer = CustomScorer(test)
+scorer = CustomScorer(val)
 utility = Utility(model, scorer)
 valuation = AnyValuationMethod(
     utility, SomeSampler(), StoppingCriterion()
@@ -212,6 +210,12 @@ with joblib.parallel_backend("ray", n_jobs=48):
     valuation.fit(train)
 ```
 ````
+
+</v-click>
+
+<v-click>
+
+and
 
 </v-click>
 
@@ -230,7 +234,7 @@ assert model.score(test) > 1.05 * previous_score
 </div>
 
 <v-click>
-<v-drag pos="836,160,80,80,36">
+<v-drag pos="833,111,80,80,36">
 <div text-center>(New interface)</div>
 </v-drag>
 </v-click>
