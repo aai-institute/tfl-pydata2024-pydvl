@@ -146,7 +146,7 @@ def generate_plots(test_train_values: NDArray, model_identifier: str, load: bool
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
     batch_size = 768
-    max_epochs = 1
+    max_epochs = 500
     model_tag = model_tag_builder(max_epochs, batch_size)
 
     lit_model = train(max_epochs, batch_size)

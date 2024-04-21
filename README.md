@@ -19,6 +19,20 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
+You will also need to create a kaggle API token to be benefit from the automatic
+download of the dataset. You can create a token in your Kaggle account settings
+and save it in a file called `kaggle.json` under `~/.kaggle/`.
+
+You can the run the experiment with:
+
+```shell
+python run_evaluation_malaria.py
+```
+
+You might need to change the batch sizes to fit in your GPU RAM, both for the
+training of the model in the main section of `run_evaluation_malaria.py`, as
+well as for the computation of the influence functions in `compute_infuences()`
+in the same file.
 
 ## Slides
 
@@ -33,7 +47,6 @@ npm run dev
 There's a live reload server running at http://localhost:3030
 
 Edit the [slides.md](./slides/slides.md) to see the changes.
-
 
 The slides are deployed with Netlify to
 [pydvl-at-pydata2024.netlify.app](https://pydvl-at-pydata2024.netlify.app/)
