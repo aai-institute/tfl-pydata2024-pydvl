@@ -32,7 +32,6 @@ Detecting mislabelled and out-of-distribution samples with [pyDVL](https://pydvl
 [Miguel de Benito Delgado](https://mdbenito.8027.org) -
 [Kristof Schröder](https://github.com/schroedk)
 
-
 <div style="display: flex; justify-content: center; align-items:center;">
   <a href="https://transferlab.ai">
     <img class="w-40" src="/transferlab-logo.svg" alt="TransferLab logo" />
@@ -117,6 +116,81 @@ etc.
 -->
 
 ---
+title: One way to measure contribution to model performance
+level: 1
+layout: two-cols-header
+class: px-6
+---
+
+## One way to measure contribution to model performance
+
+<div class="flex" style="justify-content:space-evenly;align-items:center;">
+
+<v-click>
+
+```python
+utility(some_data) := model.fit(some_data).score(validation)
+```
+
+</v-click>
+
+```python {hide|1-2|4-6}
+model = LogisticRegression(...)
+train, val, test = load_dataset(...)
+
+def u(some_data):  # utility
+    model.fit(some_data)
+    return model.score(val)
+```
+
+</div>
+
+<div v-click class="text-center">
+
+Take <span v-mark.underline.orange="11">one data point</span> $x$
+
+</div>
+
+::left::
+
+<div v-click class="text-center">Contribution to the whole dataset</div>
+
+```python {hide|1|2|3|1-3}
+score = u(train)
+score_without = u(train.drop(x))
+value = score - score_without
+```
+
+<v-click>
+<div class="text-center text-bold text-xl">Leave-One-Out</div>
+
+$$\text{value} = u(\text{train}) - u(\text{train} \setminus \{x\})$$
+
+
+</v-click>
+::right::
+
+<div v-click="'+2'" class="text-center">Contribution to subsets</div>
+
+```python {hide|1-2|3|4|all}
+for subset in sampler.from_data(train):
+  scores.append[u(subset)]
+  scores_without.append[u(subset.drop(x))]
+value = weighted_mean(scores - scores_without, coefficients)
+```
+<div v-click="14">
+<div class="text-center text-bold text-xl">Semivalue (e.g. Shapley)</div>
+
+$$\text{value} = \sum_{S \subseteq \text{train}} w(S) \left[ u(S) - u(S \setminus \{x\}) \right]$$
+
+</div>
+
+<!--
+[click] LOO is O(n), but very low signal
+
+-->
+
+---
 layout: fact
 hideInToc: true
 ---
@@ -149,7 +223,6 @@ class: p-4 table-center
 |--------------|-----------------|
 | 10%          | 9%              |
 | 15%          | 11%             |
-| 20%          | 14%             |
 
 </v-after>
 
@@ -327,15 +400,19 @@ class: px-6 table-invisible
 - Or a wrapper with a `fit()` method
 - A scoring function
 - An _imperfect_ dataset
-- ```shell
-  pip install pydvl
-  ```
 - Compute
 
 </v-clicks>
 
-<div v-click class="flex py-6" style="justify-content:center;align-items:center;">
-<div class="text-2xl font-bold px-6">+</div>
+<div v-click class="flex py-4" style="justify-content:center;align-items:center;">
+<div class="pe-6">
+
+```shell
+pip install pydvl
+```
+
+</div>
+
 <a href="https://pydvl.org" style="display:inline-block;"> <img class="w-25" src="/pydvl-logo.svg" alt="pyDVL logo" /> </a>
 </div>
 
@@ -786,58 +863,6 @@ well, e.g. LAVA.
 instead uses those available to construct one.
 
 [click:3] Last click (skip two clicks)
--->
-
----
-title: Measuring value with marginal contributions
-level: 1
-layout: two-cols-header
-class: px-6
----
-
-## Marginal-contribution methods and Shapley values
-
-```python {1-2|3-5}
-model = LogisticRegression()
-train, test = Dataset.from_sklearn(load_iris(), train_size=0.6)
-def u(data):
-    model.fit(data)
-    return model.score(test)
-```
-
-<div v-click class="text-center">
-
-Take one data point $x$
-
-</div>
-
-::left::
-
-<div v-click class="text-center">Take the whole dataset</div>
-
-```python {hide|1|2|3|1-3}
-score = u(train)
-score_without = u(train.drop(x))
-value = score - score_without
-```
-
-<div v-click class="text-center text-bold text-xl">Leave-One-Out</div>
-
-::right::
-
-<div v-click class="text-center">Look at subsets</div>
-
-```python {hide|1-2|3|4|all}
-for subset in sampler.from_data(train):
-  scores.append[u(subset)]
-  scores_without.append[u(subset.drop(x))]
-value = weighted_mean(scores - scores_without, coefficients)
-```
-<div v-click="14" class="text-center text-bold text-xl">Semivalue (e.g. Shapley)</div>
-
-<!--
-[click] LOO is O(n), but very low signal
-
 -->
 
 ---
