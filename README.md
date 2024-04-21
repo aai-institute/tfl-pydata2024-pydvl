@@ -51,7 +51,7 @@ The slides are deployed with Netlify to
 [pydvl-at-pydata2024.netlify.app](https://pydvl-at-pydata2024.netlify.app/)
 upon every push to master.
 
-To export them as PDF run
+To export them as PDF run (from the slides folder):
 
 ```shell
 npm run export -- --with-clicks
