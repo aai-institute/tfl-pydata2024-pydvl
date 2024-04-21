@@ -1,0 +1,2 @@
+# Need this file in case we open this subfolder in vscode instead of the parent
+**/*.md
