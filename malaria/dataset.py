@@ -1,10 +1,33 @@
 import os
+from enum import Enum
+import shutil
+
 from torchvision.datasets import ImageFolder
 from torchvision.transforms import ToTensor, Resize, Compose, Normalize
 from kaggle import KaggleApi
 
 
 def load_via_kaggle(dataset_name: str, destination_path: str, force: bool = False):
+    """
+    Authenticates with the Kaggle API and downloads a specified dataset.
+
+    This function initializes the Kaggle API, authenticates, and then downloads
+    the dataset specified by `dataset_name` to the path given by `destination_path`.
+    If `force` is set to True, it will overwrite any existing files in the destination
+    directory.
+
+    Args:
+        dataset_name: The name of the dataset to download.
+            Should be in the format 'user/dataset'.
+        destination_path: The local path where the dataset should be saved after
+            downloading. If the path does not exist, it will be created.
+        force: Optional; If True, existing files at the destination path will be
+            overwritten.
+
+    Returns:
+        None
+    """
+
     # Authenticating with the Kaggle API
     api = KaggleApi()
     api.authenticate()
@@ -13,6 +36,19 @@ def load_via_kaggle(dataset_name: str, destination_path: str, force: bool = Fals
     api.dataset_download_files(
         dataset_name, path=destination_path, unzip=True, force=force, quiet=False
     )
+
+
+class Label(Enum):
+    """
+    Enumeration for labeling cell images based on their infection status.
+
+    Attributes:
+        UNINFECTED: An enum member representing an uninfected status.
+        PARASITIZED: An enum member representing a parasitized status.
+
+    """
+    UNINFECTED = 1
+    PARASITIZED = 0
 
 
 class MalariaKaggleDataset:
