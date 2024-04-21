@@ -116,13 +116,13 @@ etc.
 -->
 
 ---
-title: One way to measure contribution to model performance
+title: Two ways to measure contribution to model performance
 level: 1
 layout: two-cols-header
 class: px-6
 ---
 
-## One way to measure contribution to model performance
+## Two ways to measure contribution to model performance
 
 <div class="flex" style="justify-content:space-evenly;align-items:center;">
 
