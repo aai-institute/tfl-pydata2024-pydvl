@@ -47,24 +47,49 @@ class Label(Enum):
         PARASITIZED: An enum member representing a parasitized status.
 
     """
+
     UNINFECTED = 1
     PARASITIZED = 0
 
 
 class MalariaKaggleDataset:
+    """
+    A class to manage the downloading, organizing, and loading of a malaria dataset
+    from Kaggle.
+
+    This class provides functionality to download the malaria cell images dataset
+    from Kaggle, check if the data exists locally, and prepare it for use with a
+    PyTorch model by applying necessary transformations.
+
+    Attributes:
+        data_base_dir (str): The base directory where the dataset will be stored.
+        kaggle_dataset_name (str): The name of the dataset on Kaggle.
+        cell_images_base_dir (str): The directory where cell images are stored.
+        parasite_path (str): Path to the 'Parasitized' images directory.
+        uninfected_path (str): Path to the 'Uninfected' images directory.
+    """
+
     def __init__(self, data_base_dir: str):
+        """
+        Initializes the dataset object with paths and dataset details.
+
+        Args:
+            data_base_dir: The base directory for dataset storage.
+        """
         self.data_base_dir = data_base_dir
         self.kaggle_dataset_name = "iarunava/cell-images-for-detecting-malaria"
-        self.file_name = "abc"
-        self.parasite_path = os.path.join(
-            self.data_base_dir, "cell_images", "Parasitized"
-        )
-        self.uninfected_path = os.path.join(
-            self.data_base_dir, "cell_images", "Uninfected"
-        )
-        self.file_path = os.path.join(self.data_base_dir, self.file_name)
+        self.cell_images_base_dir = os.path.join(self.data_base_dir, "cell_images")
+
+        self.parasite_path = os.path.join(self.cell_images_base_dir, "Parasitized")
+        self.uninfected_path = os.path.join(self.cell_images_base_dir, "Uninfected")
 
     def download(self, reload: bool = False):
+        """
+        Downloads the dataset from Kaggle to the specified directory.
+
+        Args:
+            reload: If True, re-downloads the data even if it already exists.
+        """
         if not self._data_exists() or reload:
             try:
                 load_via_kaggle(
@@ -73,13 +98,16 @@ class MalariaKaggleDataset:
             except Exception as e:
                 raise RuntimeError(
                     f"Failed to download dataset "
-                    f"{self.kaggle_dataset_name} to {self.file_path}"
+                    f"{self.kaggle_dataset_name} to {self.cell_images_base_dir}"
                     f"via Kaggle API. Consider to download the data"
                     f"manually: {e}"
                 )
-
-        cell_image_root = os.path.join(self.data_base_dir, "cell_images")
-        false_cell_image_root = os.path.join(cell_image_root, "cell_images")
+        # In case the archive from Kaggle contains an additional subdirectory
+        # cell_images (so cell_images/cell_images) delete it if the data
+        # exists on the top level (in the folders cell_images/Uninfected and
+        # cell_images/Parasitized) or try to move the corresponding sub-folders
+        # to the top-level
+        false_cell_image_root = os.path.join(self.cell_images_base_dir, "cell_images")
 
         if self._data_exists():
             if os.path.exists(false_cell_image_root):
@@ -94,6 +122,7 @@ class MalariaKaggleDataset:
                 )
                 shutil.move(false_root_parasitized, self.parasite_path)
                 shutil.move(false_root_uninfected, self.uninfected_path)
+                shutil.rmtree(false_cell_image_root)
             except FileNotFoundError as e:
                 raise RuntimeError(
                     f"Fail to correct downloaded data. "
@@ -102,6 +131,12 @@ class MalariaKaggleDataset:
                 )
 
     def _data_exists(self) -> bool:
+        """
+        Checks if the dataset exists and is correctly organized in the filesystem.
+
+        Returns:
+            True if the dataset is correctly organized, False otherwise.
+        """
         if not os.path.exists(self.data_base_dir):
             return False
         parasite_is_empty = os.listdir(self.parasite_path) == 0
@@ -110,6 +145,17 @@ class MalariaKaggleDataset:
         return not any_is_empty
 
     def get_torch_dataset(self, reload: bool = False) -> ImageFolder:
+        """
+        Provides a PyTorch dataset ready for model training.
+
+        Args:
+            reload: Whether to re-download and organize the dataset even if it already
+            exists locally.
+
+        Returns:
+            A PyTorch ImageFolder dataset with appropriate transformations applied.
+        """
+
         if not self._data_exists() or reload:
             self.download(reload=True)
 
@@ -122,6 +168,4 @@ class MalariaKaggleDataset:
                 ),  # Normalize
             ]
         )
-        return ImageFolder(
-            os.path.join(self.data_base_dir, "cell_images"), transform=transform
-        )
+        return ImageFolder(self.cell_images_base_dir, transform=transform)
