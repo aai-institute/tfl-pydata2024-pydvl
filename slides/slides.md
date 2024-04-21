@@ -320,13 +320,13 @@ class: px-6 table-invisible
 - ```shell
   pip install pydvl
   ```
-- (Some) elbow grease
 - Compute
 
 </v-clicks>
 
-<div v-click class="text-center">
-<a href="https://pydvl.org"> <img class="w-25" src="/pydvl-logo.svg" alt="pyDVL logo" /> </a>
+<div v-click class="flex py-6" style="justify-content:center;align-items:center;">
+<div class="text-2xl font-bold px-6">+</div>
+<a href="https://pydvl.org" style="display:inline-block;"> <img class="w-25" src="/pydvl-logo.svg" alt="pyDVL logo" /> </a>
 </div>
 
 ::right::
