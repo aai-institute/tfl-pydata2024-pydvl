@@ -66,15 +66,12 @@ title: What
 ---
 title: What is data valuation?
 level: 1
-layout: two-cols
+layout: two-cols-header
 class: self-center text-center p-6
 transition: fade-out
 ---
 
-# Data valuation computes...
-
-
-::right::
+## We are interested in
 
 <v-click>
 
@@ -82,22 +79,30 @@ the **contribution** of a data point ...
 
 </v-click>
 
-<br>
-<br>
+<div v-click="3" class="text-center">
+
+or
+
+</div>
+
+::left::
 
 <v-click>
 
 ...to the overall **model performance**
 
+(global methods: Shapley & co.)
+
 </v-click>
 
-<br>
+::right::
+
 
 <v-click>
 
-or
-
 ...to a **single prediction**
+
+(local methods: influences)
 
 </v-click>
 
@@ -116,16 +121,23 @@ etc.
 -->
 
 ---
-title: Two ways to measure contribution to model performance
+hideInToc: true
+layout: center
+---
+
+## Global valuation methods
+
+---
 level: 1
 layout: two-cols-header
 class: px-6
 ---
 
-## Two ways to measure contribution to model performance
+## Two examples of how to measure contribution
 
 <div class="flex" style="justify-content:space-evenly;align-items:center;">
 
+<div>
 <v-click>
 
 ```python
@@ -133,6 +145,13 @@ utility(some_data) := model.fit(some_data).score(validation)
 ```
 
 </v-click>
+
+<div v-click="4" class="text-center">
+
+Take <span v-mark.underline.orange="11">one data point</span> $x$
+
+</div>
+</div>
 
 ```python {hide|1-2|4-6}
 model = LogisticRegression(...)
@@ -145,15 +164,10 @@ def u(some_data):  # utility
 
 </div>
 
-<div v-click class="text-center">
-
-Take <span v-mark.underline.orange="11">one data point</span> $x$
-
-</div>
 
 ::left::
 
-<div v-click class="text-center">Contribution to the whole dataset</div>
+<div v-click="'+2'" class="text-center">1: Contribution to the whole dataset</div>
 
 ```python {hide|1|2|3|1-3}
 score = u(train)
@@ -161,16 +175,23 @@ score_without = u(train.drop(x))
 value = score - score_without
 ```
 
+<div v-click class="text-center text-bold text-xl">Leave-One-Out</div>
+
 <v-click>
-<div class="text-center text-bold text-xl">Leave-One-Out</div>
 
 $$\text{value} = u(\text{train}) - u(\text{train} \setminus \{x\})$$
 
-
 </v-click>
+
+<div v-click class="text-center">
+
+$\mathcal{O}(n)$
+
+</div>
+
 ::right::
 
-<div v-click="'+2'" class="text-center">Contribution to subsets</div>
+<div v-click class="text-center">2: Contribution to subsets</div>
 
 ```python {hide|1-2|3|4|all}
 for subset in sampler.from_data(train):
@@ -178,16 +199,25 @@ for subset in sampler.from_data(train):
   scores_without.append[u(subset.drop(x))]
 value = weighted_mean(scores - scores_without, coefficients)
 ```
-<div v-click="14">
-<div class="text-center text-bold text-xl">Semivalue (e.g. Shapley)</div>
+
+<div v-click="18" class="text-center text-bold text-xl">
+  Semivalue (e.g. Shapley)
+</div>
+
+<div v-click="'+2'">
 
 $$\text{value} = \sum_{S \subseteq \text{train}} w(S) \left[ u(S) - u(S \setminus \{x\}) \right]$$
 
 </div>
 
-<!--
-[click] LOO is O(n), but very low signal
+<div v-click class="text-center">
 
+$\mathcal{O}(2^n)$ <span v-mark.underline.red>(naive)</span>
+
+</div>
+
+<!--
+LOO is O(n), but very low signal
 -->
 
 ---
@@ -346,7 +376,7 @@ assert model.score(test) > 1.05 * previous_score
 <v-clicks>
 
 - Increase accuracy by removing bogus points
-- Crucially, select data for manual inspection
+- Crucially, select data for **inspection**
 - **Data debugging**<br>
   _what's wrong with this data?_
 - **Model debugging**<br>
@@ -424,11 +454,11 @@ pip install pydvl
 
 
 - `numpy` and `sklearn`
+- `joblib` for parallelization
+- `memcached` for caching
 - _Influence Functions_ use `pytorch`
 - Planned: allow `jax` and `torch` everywhere
-- `joblib` for parallelization with all of its backends
 - `dask` for large datasets
-- `memcached` for caching
 
 </v-click>
 
@@ -450,19 +480,25 @@ level: 1
 ## Where's the catch?
 
 - <span v-mark.underline.red="3">Computational cost</span>
-- <span v-mark.underline.red="3">Convergence</span>
-- <span v-mark.strike-through.orange="2">Consistency</span>
+- <span v-mark.underline.red="3">Has my approximation converged?</span>
+- <span v-mark.strike-through.orange="2">Consistency across runs</span>
 - <span v-mark.underline.green="1">Model and metric dependence</span>
 
 
 ::right::
 
+<br>
+
 <div v-click="'4'">
 
-- Shapley & co. $O(2^n)$ _in principle_
-- But $O(n \log(n))$ for certain situations.
+## Some solutions
+
+
+- Monte-Carlo approximations
+- Efficient subset sampling strategies
 - Proxy models (value transfer)
-- Model-specific assumptions (KNN, Data-OOB, ...)
+- Model-specific methods (KNN-Shap, Data-OOB, ...)
+- Utility learning (YMMV)
 
 </div>
 
@@ -638,7 +674,7 @@ values = lazy_values.to_zarr(path, ...)   # memmapped
 [^1]: https://www.kaggle.com/iarunava/cell-images-for-detecting-malaria
 
 ---
-title: "Example 2: procedure"
+title: "Example 2: Procedure"
 level: 1
 layout: two-cols-header
 class: p-6
@@ -925,7 +961,7 @@ transition: fade-out
 hideInToc: true
 ---
 
-## Table of contents
+## Contents
 
 <AutoFitText :max="16" :min="8">
 
