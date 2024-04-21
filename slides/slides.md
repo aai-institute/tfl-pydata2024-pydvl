@@ -700,7 +700,9 @@ class: p-6
 ::bottom::
 
 <v-click>
+
 ````md magic-move
+
 ```python {1,3}
 if_model = DirectInfluence(torch_model, loss, ...)
 (...)
@@ -713,7 +715,9 @@ if_model = NystroemSketchInfluence(torch_model, loss, rank=10, ...)
 client = Client(LocalCUDACluster())
 if_calc = DaskInfluenceCalculator(if_model, client)
 ```
+
 ````
+
 </v-click>
 
 ---
@@ -786,3 +790,155 @@ PyDVL contributors
 | [<img src="/people/anes.jpeg" alt="Anes Benmerzoug" class="author-thumbnail">](https://github.com/AnesBenmerzoug) | [<img src="/people/miguel.png" alt="Miguel de Benito Delgado" class="author-thumbnail">](https://github.com/mdbenito) | [<img src="/people/janos.jpeg" alt="Janoś Gabler" class="author-thumbnail">](https://github.com/janosg) | 
 | [<img src="/people/jakob.jpeg" alt="Jakob Kruse" class="author-thumbnail">](https://github.com/jakobkruse1) | [<img src="/people/markus.jpeg" alt="Markus Semmler" class="author-thumbnail">](https://github.com/kosmitive) | [<img src="/people/fabio.png" alt="Fabio Peruzzo" class="author-thumbnail">](https://github.com/xuzzo) |
 | [<img src="/people/kristof.jpg" alt="Kristof Schröder" class="author-thumbnail">](https://github.com/schroedk) | [<img src="/people/bastien.png" alt="Bastien Zim" class="author-thumbnail">](https://github.com/BastienZim) | [<img src="/people/uncle-sam.png" alt="You" class="author-thumbnail"><span style="font-size:small;">You!</span>](https://github.com/aai-institute/pydvl) |
+
+---
+layout: end
+---
+
+## Appendix
+
+
+---
+layout: image-right
+image: data-valuation-taxonomy.svg
+backgroundSize: contain
+class: invertible
+---
+
+# Many methods for data valuation
+
+It's a growing field [^1]
+
+<v-clicks>
+
+- Fit before, during, or after trainig
+- With or without reference datasets
+- Specific to classification / regression / unsupervised
+- Different model assumptions (from none to strong)
+- Local and global valuation
+
+</v-clicks>
+
+<!-- Footer -->
+
+[^1]: [A taxonomy of data valuation](https://transferlab.ai/blog)
+
+
+<!--
+Notes can also sync with clicks
+
+[click] pyDVL focuses around model-based, but we're introducing model-free methods as
+well, e.g. LAVA.
+
+[click] In some data market scenarios, one does not have a reference dataset, but
+instead uses those available to construct one.
+
+[click:3] Last click (skip two clicks)
+-->
+
+---
+title: Measuring value with marginal contributions
+level: 1
+layout: two-cols-header
+class: px-6
+---
+
+## Marginal-contribution methods and Shapley values
+
+```python {1-2|3-5}
+model = LogisticRegression()
+train, test = Dataset.from_sklearn(load_iris(), train_size=0.6)
+def u(data):
+    model.fit(data)
+    return model.score(test)
+```
+
+<div v-click class="text-center">
+
+Take one data point $x$
+
+</div>
+
+::left::
+
+<div v-click class="text-center">Take the whole dataset</div>
+
+```python {hide|1|2|3|1-3}
+score = u(train)
+score_without = u(train.drop(x))
+value = score - score_without
+```
+
+<div v-click class="text-center text-bold text-xl">Leave-One-Out</div>
+
+::right::
+
+<div v-click class="text-center">Look at subsets</div>
+
+```python {hide|1-2|3|4|all}
+for subset in sampler.from_data(train):
+  scores.append[u(subset)]
+  scores_without.append[u(subset.drop(x))]
+value = weighted_mean(scores - scores_without, coefficients)
+```
+<div v-click="14" class="text-center text-bold text-xl">Semivalue (e.g. Shapley)</div>
+
+<!--
+[click] LOO is O(n), but very low signal
+
+-->
+
+---
+layout: two-cols-header
+dragPos:
+  square: 841,363,20,20,270
+---
+
+# Computing values with pyDVL
+
+Three steps for all valuation methods
+
+::left::
+
+<v-clicks>
+
+- <span v-mark.underline.orange="4">Prepare `Dataset` and `model`</span>
+- <span v-mark.underline.green="5">Choose `Scorer` and `Utility`</span>
+- <span v-mark.highlight.blue="6">Compute values (contribution to performance)</span>
+
+</v-clicks>
+
+<br>
+<br>
+
+<br>
+<br>
+
+::right::
+
+```python {none|1-2|3-4|5-9|all}
+train, test = Dataset.from_sklearn(load_iris(), train_size=0.6)
+model = LogisticRegression()
+scorer = SupervisedScorer("accuracy", test)
+utility = Utility(model, scorer)
+valuation = DataBanzhafValuation(
+    utility, MSRSampler(), RankCorrelation()
+)
+with joblib.parallel_backend("ray", n_jobs=48):
+    valuation.fit(train)
+```
+
+
+<div v-drag="'square'">
+  <div class="i-material-symbols-check-circle-outline"></div>
+</div>
+
+<arrow v-click="[4,5]" x1="350" y1="200" x2="445" y2="180" color="orange" width="2" arrowSize="1" />
+<arrow v-click="[5,6]" x1="350" y1="260" x2="445" y2="220" color="green" width="2" arrowSize="1" />
+
+
+<style>
+li {
+  padding-top:2rem;
+}
+</style>
