@@ -42,6 +42,29 @@ class MalariaKaggleDataset:
                     f"manually: {e}"
                 )
 
+        cell_image_root = os.path.join(self.data_base_dir, "cell_images")
+        false_cell_image_root = os.path.join(cell_image_root, "cell_images")
+
+        if self._data_exists():
+            if os.path.exists(false_cell_image_root):
+                shutil.rmtree(false_cell_image_root)
+        else:
+            try:
+                false_root_parasitized = os.path.join(
+                    false_cell_image_root, "Parasitized"
+                )
+                false_root_uninfected = os.path.join(
+                    false_cell_image_root, "Uninfected"
+                )
+                shutil.move(false_root_parasitized, self.parasite_path)
+                shutil.move(false_root_uninfected, self.uninfected_path)
+            except FileNotFoundError as e:
+                raise RuntimeError(
+                    f"Fail to correct downloaded data. "
+                    f"Consider to download the data"
+                    f"manually: {e}"
+                )
+
     def _data_exists(self) -> bool:
         if not os.path.exists(self.data_base_dir):
             return False
