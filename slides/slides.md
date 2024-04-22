@@ -29,7 +29,7 @@ Detecting mislabelled and out-of-distribution samples with [pyDVL](https://pydvl
 </div>
 
 
-[Miguel de Benito Delgado](https://mdbenito.8027.org) -
+[Miguel de Benito Delgado](https://github.com/mdbenito) -
 [Kristof Schröder](https://github.com/schroedk)
 
 <div style="display: flex; justify-content: center; align-items:center;">
