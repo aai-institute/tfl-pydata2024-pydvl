@@ -556,7 +556,7 @@ The "influence" of $z_2$ on test point $z$ is roughly
 </v-clicks>
 
 <v-click at="5">
-<Arrow x1="360" y1="295" x2="325" y2="245" color="red"/>
+<Arrow x1="880" y1="285" x2="785" y2="260" color="red"/>
 </v-click>
 
 
@@ -833,6 +833,11 @@ Thank you for your attention!
   </a>
 </div>
 
+<br>
+
+Slides: [pydata2024.pydvl.org](https://pydata2024.pydvl.org)
+
+
 ::right::
 
 PyDVL contributors
@@ -843,6 +848,7 @@ PyDVL contributors
 | [<img src="/people/anes.jpeg" alt="Anes Benmerzoug" class="author-thumbnail">](https://github.com/AnesBenmerzoug) | [<img src="/people/miguel.png" alt="Miguel de Benito Delgado" class="author-thumbnail">](https://github.com/mdbenito) | [<img src="/people/janos.jpeg" alt="Janoś Gabler" class="author-thumbnail">](https://github.com/janosg) | 
 | [<img src="/people/jakob.jpeg" alt="Jakob Kruse" class="author-thumbnail">](https://github.com/jakobkruse1) | [<img src="/people/markus.jpeg" alt="Markus Semmler" class="author-thumbnail">](https://github.com/kosmitive) | [<img src="/people/fabio.png" alt="Fabio Peruzzo" class="author-thumbnail">](https://github.com/xuzzo) |
 | [<img src="/people/kristof.jpg" alt="Kristof Schröder" class="author-thumbnail">](https://github.com/schroedk) | [<img src="/people/bastien.png" alt="Bastien Zim" class="author-thumbnail">](https://github.com/BastienZim) | [<img src="/people/uncle-sam.png" alt="You" class="author-thumbnail"><span style="font-size:small;">You!</span>](https://github.com/aai-institute/pydvl) |
+
 
 ---
 layout: end
