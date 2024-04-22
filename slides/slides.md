@@ -152,20 +152,12 @@ utility(some_data) := model.fit(some_data).score(validation)
 
 </v-click>
 
-<div v-click="4" class="text-center">
+<div v-click class="text-center">
 
-Take <span v-mark.underline.orange="11">one training point</span> $x \in T$
+Take <span v-mark.underline.orange="10">one training point</span> $x \in T$
 
 </div>
 </div>
-
-```python {hide|1-2|3-5}
-model = LogisticRegression(...)
-train, val, test = split_dataset(...)
-def u(some_data):  # utility
-    model.fit(some_data)
-    return model.score(val)
-```
 
 </div>
 
@@ -173,7 +165,7 @@ def u(some_data):  # utility
 
 ::left::
 
-<div v-click="'+2'" class="text-center">1: Contribution to the whole dataset</div>
+<div v-click class="text-center">1: Contribution to the whole dataset</div>
 
 ```python {hide|1|2|3|1-3}
 score_with = u(train)
@@ -189,9 +181,15 @@ $$\text{value}(x) = u(T) - u(T \setminus \{x\})$$
 
 </v-click>
 
+<div v-click="'+2'" class="text-center">
+
+$n$ retrainings
+
+</div>
+
 <div v-click class="text-center">
 
-$n$ retrainings, low signal
+low signal
 
 </div>
 
@@ -336,8 +334,8 @@ assert model.score(test) > 1.02 * previous_score
 </div>
 
 <v-click>
-<v-drag pos="842,91,80,80,36">
-<div text-center>new interface: v0.10</div>
+<v-drag pos="838,104,80,80,33">
+<div text-center>new interface v0.10</div>
 </v-drag>
 </v-click>
 
@@ -364,18 +362,10 @@ class: p-6
 
 ::left::
 
-### This bears repeating
-
-```python
-model.fit(clean_data)
-assert model.score(test) > 1.02 * previous_score
-```
-
-<br>
 <v-clicks>
 
-- Increase accuracy by removing bogus points
-- Crucially: select data for **inspection**
+- We increased accuracy by removing bogus points
+- Better: select data for **inspection**
 - **Data debugging**<br>
   _what's wrong with this data?_
 - **Model debugging**<br>
