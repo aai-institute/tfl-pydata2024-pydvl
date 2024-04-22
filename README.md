@@ -48,7 +48,7 @@ There's a live reload server running at http://localhost:3030. Edit
 [slides.md](./slides/slides.md) to see the changes.
 
 The slides are deployed with Netlify to
-[pydvl-at-pydata2024.netlify.app](https://pydvl-at-pydata2024.netlify.app/)
+[pydata2024.pydvl.org](https://pydata2024.pydvl.org/)
 upon every push to master.
 
 To export them as PDF run (from the slides folder):
