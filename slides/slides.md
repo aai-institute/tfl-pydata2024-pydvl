@@ -835,7 +835,10 @@ Thank you for your attention!
 
 <br>
 
-Slides: [pydata2024.pydvl.org](https://pydata2024.pydvl.org)
+
+slides and code:
+
+[**pydata2024.pydvl.org**](https://pydata2024.pydvl.org)
 
 
 ::right::
