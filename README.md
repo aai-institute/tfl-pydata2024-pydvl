@@ -1,6 +1,11 @@
 # PyDVL @ PyData 2024 Berlin
+<p align="center" style="text-align:center;">
+    <img alt="pyDVL Logo" src="resources/logo.svg" width="200"/>
+</p>
 
-These are the materials for the pyDVL presentation held on March 22nd, 2024 at
+These are the materials for the 
+[pyDVL](https://www.pydvl.org) 
+presentation held on March 22nd, 2024 at
 PyData Berlin.
 
 ## Detecting mislabelled images with pyDVL
@@ -23,6 +28,11 @@ You will also need to create a kaggle API token to be benefit from the automatic
 download of the dataset. You can create a token in your Kaggle account settings
 and save it in a file called `kaggle.json` under `~/.kaggle/`.
 
+If you would like to download the data manually, make sure the result looks like this:
+<p >
+    <img alt="data folder" src="resources/data_folder.png" width="400"/>
+</p>
+
 You can the run the experiment with:
 
 ```shell
@@ -33,6 +43,11 @@ You might need to change the batch sizes to fit in your GPU RAM, both for the
 training of the model in the main section of `run_evaluation_malaria.py`, as
 well as for the computation of the influence functions in `compute_infuences()`
 in the same file.
+
+The script trains a pytorch lightning model, computes corresponding
+influence values and generates histograms and plots. By default, the results
+are persisted in the folder `results` on the top-level of the repository, which
+can be configured via `config.py`
 
 ## Slides
 
