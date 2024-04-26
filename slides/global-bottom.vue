@@ -17,10 +17,12 @@ onMounted(() => {
     >
       <span><SlideCurrentNo /> / <SlidesTotal /></span>
     </div>
-    <img
-      class="absolute bottom-1 right-1 w-40 z-9999"
-      src="/transferlab-logo.svg"
-      alt="TransferLab logo"
-    />
+    <a href="https://transferlab.ai" target="_blank">
+      <img
+        class="absolute bottom-1 right-1 w-40 z-9999"
+        src="/transferlab-logo.svg"
+        alt="TransferLab logo"
+      />
+    </a>
   </div>
 </template>
