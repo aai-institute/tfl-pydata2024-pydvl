@@ -1,0 +1,13 @@
+[project]
+name = "tfl-pydata2024-pydvl"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "kaggle>=1.7.4.5",
+    "lightning>=2.5.2",
+    "pydvl[influence]>=0.10.0",
+    "seaborn>=0.13.2",
+    "torchvision>=0.22.1",
+]
