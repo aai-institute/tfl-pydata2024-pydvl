@@ -123,7 +123,7 @@ def compute_influences(
     # turn torch model into eval mode and fit the corresponding influence function model
     # to the train data
     model.eval()
-    if_model = DirectInfluence(model, loss_fn, hessian_regularization=0.001)
+    if_model = DirectInfluence(model, loss_fn, regularization=0.001)
     if_model.fit(train_loader)
 
     # Wrap the chunk computation model into a sequential calculator. No computation is
